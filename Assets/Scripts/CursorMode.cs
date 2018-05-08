@@ -6,30 +6,48 @@ public class CursorMode : MonoBehaviour {
 
 
     public GameObject[] prefabs;
+    public GameObject currentObject;
+    public GameObject line;
+    public float rotationValue = 15.0f;
 
     private int currentObjectIndex = 0;
     private Quaternion spawnRotation;
+    bool throwMode = false;
+    LineRenderer lineRenderer;
+    GameObject thrownObject;
 
-    public GameObject currentObject;
+    
 
-    public float rotationValue = 15.0f;
+    private void Awake()
+    {
+        lineRenderer = line.GetComponent<LineRenderer>();
+        line.SetActive(false);
+    }
 
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	void Update () {
-        if (Input.GetKeyDown(KeyCode.A))
-            PrevObject();
-        else if (Input.GetKeyDown(KeyCode.D))
-            NextObject();
-        else if (Input.GetMouseButtonDown(0))
-            Spawn();
-        else if (Input.GetKeyDown(KeyCode.E))
-            RotateObjectClockwise();
-        else if (Input.GetKeyDown(KeyCode.Q))
-            RotateObjectCounterclockwise();
+    void Update () {
+        if (!throwMode)
+        {
+            if (Input.GetKeyDown(KeyCode.A))
+                PrevObject();
+            else if (Input.GetKeyDown(KeyCode.D))
+                NextObject();
+            else if (Input.GetKeyDown(KeyCode.E))
+                RotateObjectClockwise();
+            else if (Input.GetKeyDown(KeyCode.Q))
+                RotateObjectCounterclockwise();
+            else if (Input.GetMouseButtonDown(0))
+                Spawn();
+            else if (Input.GetKeyDown(KeyCode.Mouse1))
+                StartThrowing();
+        }
+        else
+        {
+            lineRenderer.SetPosition(1, transform.position);
+            if (Input.GetKeyUp(KeyCode.Mouse1))
+                EndThrowing();
+        }
+        
+        
     }
 
     void RotateObjectClockwise()
@@ -83,5 +101,31 @@ public class CursorMode : MonoBehaviour {
     void Spawn()
     {
         Instantiate(prefabs[currentObjectIndex], transform.position, spawnRotation);
+    }
+
+
+    void StartThrowing()
+    {
+        if (prefabs[currentObjectIndex].GetComponent<Rigidbody2D>() == null)
+            return;
+        throwMode = true;
+        thrownObject = Instantiate(prefabs[currentObjectIndex], transform.position, Quaternion.identity);
+        thrownObject.GetComponent<Rigidbody2D>().simulated = false;
+        lineRenderer.SetPosition(0, transform.position);
+        lineRenderer.SetPosition(1, transform.position);
+        currentObject.SetActive(false);
+        line.SetActive(true);
+        
+    }
+
+    void EndThrowing()
+    {
+        Vector2 throwForce = new Vector2((lineRenderer.GetPosition(0) - lineRenderer.GetPosition(1)).x, (lineRenderer.GetPosition(0) - lineRenderer.GetPosition(1)).y);
+        thrownObject.GetComponent<Rigidbody2D>().simulated = true;
+        thrownObject.GetComponent<Rigidbody2D>().AddForce(throwForce, ForceMode2D.Impulse);
+        thrownObject = null;
+        throwMode = false;
+        currentObject.SetActive(true);
+        line.SetActive(false);
     }
 }
