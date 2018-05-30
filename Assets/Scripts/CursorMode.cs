@@ -36,7 +36,7 @@ public class CursorMode : MonoBehaviour {
             else if (Input.GetKeyDown(KeyCode.Q))
                 RotateObjectCounterclockwise();
             else if (Input.GetMouseButtonDown(0))
-                Spawn();
+                LeftClick();
             else if (Input.GetKeyDown(KeyCode.Mouse1))
                 StartThrowing();
         }
@@ -97,6 +97,28 @@ public class CursorMode : MonoBehaviour {
             Destroy(rb);
     }
 
+    void LeftClick()
+    {
+        if (currentObject.name == "Deleter(Clone)")
+            Delete();
+        else
+            Spawn();
+
+    }
+
+    void Delete()
+    {
+        Collider2D[] colliders = new Collider2D[10];
+        if (currentObject.GetComponentInChildren<CircleCollider2D>().OverlapCollider(new ContactFilter2D(), colliders) > 0)
+        {
+            
+            for (int i = 0; i < colliders.Length; i++)
+            {
+                if (colliders[i] != null)
+                    Destroy(colliders[i].gameObject);
+            }
+        }
+    }
 
     void Spawn()
     {
