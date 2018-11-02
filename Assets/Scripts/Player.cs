@@ -9,6 +9,8 @@ public class Player : MonoBehaviour {
     [Header("References")]
     public Rigidbody2D rigibdoy;
     public Transform throwPosition;
+    public SpriteRenderer sprite;
+    public GameObject ballDetector;
 
     [Header("Data")]
     public uint number = 0;
@@ -35,7 +37,7 @@ public class Player : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        		
+        ballDetector.GetComponent<BallDetetor>().balldetected += () => { hasBall = true; };
 	}
 	
 	// Update is called once per frame
@@ -56,12 +58,17 @@ public class Player : MonoBehaviour {
         if (horizontal != 0)
         {
             if (horizontal > 0)
+            {
                 flip = 1;
-
+                sprite.flipX = false;
+            }
             else
+            {
                 flip = -1;
+                sprite.flipX = true;
+            }
+                
 
-            transform.localScale = new Vector3(flip, 1, 1);
             if (jumping)
             {
                 moveVector.x = horizontal * movementSpeed * Time.deltaTime * inAirModifier;
@@ -107,9 +114,23 @@ public class Player : MonoBehaviour {
             Vector2 temp = throwForce;
             temp.x *= flip;
             UniverseManager.instance.SpawnBall(throwPosition.position, temp);
-            //hasBall = false;
+            hasBall = false;
+            DisableBallDetector();
         }
     }
+
+    void DisableBallDetector()
+    {
+        ballDetector.SetActive(false);
+        StartCoroutine(EnableBallPickupCoroutine());
+    }
+
+    IEnumerator EnableBallPickupCoroutine()
+    {
+        yield return new WaitForSeconds(0.25f);
+        ballDetector.SetActive(true);
+    }
+
 
     private void OnCollisionEnter2D(Collision2D collision)
     {

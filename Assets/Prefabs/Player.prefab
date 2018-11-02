@@ -69,7 +69,8 @@ GameObject:
   m_Component:
   - component: {fileID: 4127530736946660}
   - component: {fileID: 61706079826774896}
-  m_Layer: 0
+  - component: {fileID: 114540523382720806}
+  m_Layer: 10
   m_Name: BallDetector
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -101,7 +102,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1574116750646970}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: -15, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4508501279137172}
@@ -127,7 +128,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1818661215439096}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 102.5, y: 121.3, z: 0}
+  m_LocalPosition: {x: 102.5, y: 116.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4900459973592864}
@@ -231,7 +232,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: 0, y: -10}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -242,7 +243,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 60, y: 140}
+  m_Size: {x: 60, y: 120}
   m_EdgeRadius: 0
 --- !u!61 &61706079826774896
 BoxCollider2D:
@@ -267,7 +268,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 40, y: 110}
   m_EdgeRadius: 0
 --- !u!81 &81111287815978564
 AudioListener:
@@ -287,6 +288,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f40fab8d9fbc164fbd140df965348bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &114540523382720806
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1574116750646970}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08e4ced978d49704491acf55c054ef30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114993528546821120
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -299,6 +311,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rigibdoy: {fileID: 50386016976192442}
+  throwPosition: {fileID: 4958553080913980}
+  sprite: {fileID: 212686897685211782}
+  ballDetector: {fileID: 1574116750646970}
   number: 0
   movementSpeed: 200
   maxVelocityX: 400
@@ -308,7 +323,7 @@ MonoBehaviour:
   inAirModifier: 0.7
   maxJumpTimeFrames: 15
   jumpFrames: 0
-  throwForce: {x: 0, y: 0}
+  throwForce: {x: 100, y: 150}
 --- !u!212 &212686897685211782
 SpriteRenderer:
   m_ObjectHideFlags: 1
