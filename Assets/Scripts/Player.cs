@@ -23,21 +23,43 @@ public class Player : MonoBehaviour {
     public float jumpDumping = 0.5f;
     public float inAirModifier = 0.7f;
     public int maxJumpTimeFrames = 40;
-    public int jumpFrames = 0;
+    private int jumpFrames = 0;
     private int flip = 1;
 
     [Header("Throwing")]
     public Vector2 throwForce = new Vector2();
 
+    [Header("Debug")]
+    public bool infiniteBalls = false;
+
+
     private bool jumping = false;
     private bool throwing = false;
+
+    private IEnumerator EnableBallPickupCoroutineREF;
+
+
+
+    private bool HasBall
+    {
+        get
+        {
+            return infiniteBalls || hasBall;
+        }
+
+        set
+        {
+            hasBall = value;
+        }
+    }
+
     private bool hasBall = true;
 
-    
 
-	// Use this for initialization
-	void Start () {
-        ballDetector.GetComponent<BallDetetor>().balldetected += () => { hasBall = true; };
+
+    // Use this for initialization
+    void Start () {
+        ballDetector.GetComponent<BallDetetor>().balldetected += () => { HasBall = true; };
 	}
 	
 	// Update is called once per frame
@@ -53,10 +75,11 @@ public class Player : MonoBehaviour {
 
     private void UpdateMovement()
     {
-        float horizontal = Input.GetAxisRaw("Horizontal");
+        float horizontal = GameInput.instance.GetAxis(GameAxis.X_MOVEMENT, (int)number);
         Vector2 moveVector = new Vector2();
         if (horizontal != 0)
         {
+            float absXValue = Mathf.Abs(throwPosition.localPosition.x);
             if (horizontal > 0)
             {
                 flip = 1;
@@ -67,7 +90,9 @@ public class Player : MonoBehaviour {
                 flip = -1;
                 sprite.flipX = true;
             }
-                
+            throwPosition.localPosition = new Vector3(absXValue * flip, throwPosition.localPosition.y, throwPosition.localPosition.z);
+
+
 
             if (jumping)
             {
@@ -83,7 +108,7 @@ public class Player : MonoBehaviour {
         if (jumping)
         {
             moveVector.y = jumpMomentum * Time.deltaTime;
-            if(Input.GetAxisRaw("Vertical") > 0.7f && jumpFrames < maxJumpTimeFrames)
+            if(GameInput.instance.GetButton(GameButtons.JUMP, (int)number) && jumpFrames < maxJumpTimeFrames)
             {
                 jumpFrames++;
             }
@@ -94,7 +119,7 @@ public class Player : MonoBehaviour {
 
             
         }
-        if (!jumping && Input.GetAxisRaw("Vertical") > 0.7f)
+        if (!jumping && GameInput.instance.GetButton(GameButtons.JUMP, (int)number))
         {
             jumping = true;
             jumpFrames++;
@@ -109,12 +134,12 @@ public class Player : MonoBehaviour {
 
     private void UpdateThrowing()
     {
-        if (Input.GetKeyDown(KeyCode.Space) && hasBall)
+        if (GameInput.instance.GetButtonPressed(GameButtons.THROW, (int)number) && HasBall)
         {
             Vector2 temp = throwForce;
             temp.x *= flip;
             UniverseManager.instance.SpawnBall(throwPosition.position, temp);
-            hasBall = false;
+            HasBall = false;
             DisableBallDetector();
         }
     }
@@ -122,7 +147,10 @@ public class Player : MonoBehaviour {
     void DisableBallDetector()
     {
         ballDetector.SetActive(false);
-        StartCoroutine(EnableBallPickupCoroutine());
+        if (EnableBallPickupCoroutineREF != null)
+            StopCoroutine(EnableBallPickupCoroutineREF);
+        EnableBallPickupCoroutineREF = EnableBallPickupCoroutine();
+        StartCoroutine(EnableBallPickupCoroutineREF);
     }
 
     IEnumerator EnableBallPickupCoroutine()
