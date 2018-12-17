@@ -37,7 +37,8 @@ public class GameInput : MonoBehaviour {
 
     #endregion
 
-    public List<Player> players = new List<Player>();
+    
+    public List<InputPlayer> players = new List<InputPlayer>();
 
     private void Init()
     {
@@ -54,7 +55,7 @@ public class GameInput : MonoBehaviour {
 
         PCPlayer player1 = new PCPlayer
         {
-            id = 0,
+            id = 1,
             jumpKey = KeyCode.W,
             throwKey = KeyCode.LeftControl,
             xAxisName = "Horizontal2",
@@ -69,7 +70,7 @@ public class GameInput : MonoBehaviour {
     {
         if (player < 0)
         {
-            foreach(Player pl in players)
+            foreach(InputPlayer pl in players)
             {
                 if (pl.GetButton(button))
                     return true;
@@ -90,7 +91,7 @@ public class GameInput : MonoBehaviour {
     {
         if (player < 0)
         {
-            foreach (Player pl in players)
+            foreach (InputPlayer pl in players)
             {
                 if (pl.GetButtonPressed(button))
                     return true;
@@ -111,7 +112,7 @@ public class GameInput : MonoBehaviour {
     {
         if (player < 0)
         {
-            foreach (Player pl in players)
+            foreach (InputPlayer pl in players)
             {
                 if (pl.GetButtonReleased(button))
                     return true;
@@ -133,7 +134,7 @@ public class GameInput : MonoBehaviour {
         if (player < 0)
         {
             float sum = 0.0f;
-            foreach (Player pl in players)
+            foreach (InputPlayer pl in players)
             {
                 sum += pl.GetAxis(axis);
             }
@@ -153,109 +154,111 @@ public class GameInput : MonoBehaviour {
         }
 
     }
+}
 
-    public class Player
+[System.Serializable]
+public class InputPlayer
+{
+    public int id;
+
+
+    public virtual bool GetButton(GameButtons button)
     {
-        public int id;
-
-
-        public virtual bool GetButton(GameButtons button)
-        {
-            return false;
-        }
-
-        public virtual bool GetButtonPressed(GameButtons button)
-        {
-            return false;
-        }
-
-        public virtual bool GetButtonReleased(GameButtons button)
-        {
-            return false;
-        }
-
-        public virtual float GetAxis(GameAxis axis)
-        {
-
-            return 0.0f;
-        }
+        return false;
     }
 
-    public class PCPlayer : Player
+    public virtual bool GetButtonPressed(GameButtons button)
     {
-        public KeyCode jumpKey;
-        public KeyCode throwKey;
-        public string xAxisName;
-        public string yAxisName;
+        return false;
+    }
 
-        public override bool GetButton(GameButtons button)
+    public virtual bool GetButtonReleased(GameButtons button)
+    {
+        return false;
+    }
+
+    public virtual float GetAxis(GameAxis axis)
+    {
+
+        return 0.0f;
+    }
+}
+
+[System.Serializable]
+public class PCPlayer : InputPlayer
+{
+    public KeyCode jumpKey;
+    public KeyCode throwKey;
+    public string xAxisName;
+    public string yAxisName;
+
+    public override bool GetButton(GameButtons button)
+    {
+        switch (button)
         {
-            switch(button)
-            {
-                case GameButtons.NONE:
-                    return Input.GetKey(KeyCode.None);
+            case GameButtons.NONE:
+                return Input.GetKey(KeyCode.None);
 
-                case GameButtons.JUMP:
-                    return Input.GetKey(jumpKey);
+            case GameButtons.JUMP:
+                return Input.GetKey(jumpKey);
 
-                case GameButtons.THROW:
-                    return Input.GetKey(throwKey);
-                
-            }
+            case GameButtons.THROW:
+                return Input.GetKey(throwKey);
 
-            return false;
         }
 
-        public override bool GetButtonPressed(GameButtons button)
+        return false;
+    }
+
+    public override bool GetButtonPressed(GameButtons button)
+    {
+        switch (button)
         {
-            switch (button)
-            {
-                case GameButtons.NONE:
-                    return Input.GetKeyDown(KeyCode.None);
+            case GameButtons.NONE:
+                return Input.GetKeyDown(KeyCode.None);
 
-                case GameButtons.JUMP:
-                    return Input.GetKeyDown(jumpKey);
+            case GameButtons.JUMP:
+                return Input.GetKeyDown(jumpKey);
 
-                case GameButtons.THROW:
-                    return Input.GetKeyDown(throwKey);
+            case GameButtons.THROW:
+                return Input.GetKeyDown(throwKey);
 
-            }
-
-            return false;
         }
 
-        public override bool GetButtonReleased(GameButtons button)
+        return false;
+    }
+
+    public override bool GetButtonReleased(GameButtons button)
+    {
+
+        switch (button)
         {
+            case GameButtons.NONE:
+                return Input.GetKeyUp(KeyCode.None);
 
-            switch (button)
-            {
-                case GameButtons.NONE:
-                    return Input.GetKeyUp(KeyCode.None);
+            case GameButtons.JUMP:
+                return Input.GetKeyUp(jumpKey);
 
-                case GameButtons.JUMP:
-                    return Input.GetKeyUp(jumpKey);
+            case GameButtons.THROW:
+                return Input.GetKeyUp(throwKey);
 
-                case GameButtons.THROW:
-                    return Input.GetKeyUp(throwKey);
-
-            }
-
-            return false;
         }
 
-        public override float GetAxis(GameAxis axis)
+        return false;
+    }
+
+    public override float GetAxis(GameAxis axis)
+    {
+        switch (axis)
         {
-            switch(axis)
-            {
-                case GameAxis.X_MOVEMENT:
-                    return Input.GetAxis(xAxisName);
+            case GameAxis.X_MOVEMENT:
+                return Input.GetAxis(xAxisName);
 
-                case GameAxis.Y_MOVEMENT:
-                    return Input.GetAxis(yAxisName);
-            }
-
-            return 0.0f;
+            case GameAxis.Y_MOVEMENT:
+                return Input.GetAxis(yAxisName);
         }
+
+        return 0.0f;
     }
 }
 
