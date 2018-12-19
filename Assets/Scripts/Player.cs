@@ -23,8 +23,9 @@ public class Player : MonoBehaviour {
     public float jumpDumping = 0.5f;
     public float inAirModifier = 0.7f;
     public int maxJumpTimeFrames = 40;
+    public int flip = 1;
     private int jumpFrames = 0;
-    private int flip = 1;
+    
 
     [Header("Throwing")]
     public Vector2 throwForce = new Vector2();
