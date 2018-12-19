@@ -48,20 +48,10 @@ public class UniverseManager : MonoBehaviour {
         }
     }
 
-    // Use this for initialization
-    void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
-
     public void SpawnBall(Vector3 position ,Vector2 initialForce = new Vector2(), float torque = 0.0f)
     {
         GameObject go = Instantiate(ballPrefab, position, Quaternion.identity);
         go.GetComponent<Rigidbody2D>().AddForce(initialForce, ForceMode2D.Impulse);
-        go.GetComponent<Rigidbody2D>().AddTorque(torque);
+        go.GetComponent<Rigidbody2D>().AddTorque(torque, ForceMode2D.Impulse);
     }
 }
