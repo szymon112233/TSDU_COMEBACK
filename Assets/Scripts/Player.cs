@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Player : MonoBehaviour {
 
+    public System.Action BallThrown;
+
 
     //References
     [Header("References")]
@@ -29,6 +31,7 @@ public class Player : MonoBehaviour {
 
     [Header("Throwing")]
     public Vector2 throwForce = new Vector2();
+    public float torque = 0.0f;
 
     [Header("Debug")]
     public bool infiniteBalls = false;
@@ -137,12 +140,19 @@ public class Player : MonoBehaviour {
     {
         if (GameInput.instance.GetButtonPressed(GameButtons.THROW, (int)number) && HasBall)
         {
-            Vector2 temp = throwForce;
-            temp.x *= flip;
-            UniverseManager.instance.SpawnBall(throwPosition.position, temp);
-            HasBall = false;
-            DisableBallDetector();
+            ThrowBall();
         }
+    }
+
+    void ThrowBall()
+    {
+        Vector2 temp = throwForce;
+        temp.x *= flip;
+        UniverseManager.instance.SpawnBall(throwPosition.position, temp, torque * flip);
+        HasBall = false;
+        DisableBallDetector();
+        if (BallThrown != null)
+            BallThrown();
     }
 
     void DisableBallDetector()

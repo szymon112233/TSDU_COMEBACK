@@ -26,6 +26,21 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!1 &1480086986859764
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4399391962611988}
+  m_Layer: 9
+  m_Name: CameraCenter
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
 --- !u!1 &1529586607398174
 GameObject:
   m_ObjectHideFlags: 0
@@ -90,19 +105,33 @@ Transform:
   m_Father: {fileID: 4508501279137172}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &4399391962611988
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1480086986859764}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4508501279137172}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4508501279137172
 Transform:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1818661215439096}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 102.5, y: 116.5, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 104.46645, y: -329.98502, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4900459973592864}
   - {fileID: 4127530736946660}
   - {fileID: 4958553080913980}
+  - {fileID: 4399391962611988}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -229,14 +258,16 @@ MonoBehaviour:
   sprite: {fileID: 212686897685211782}
   ballDetector: {fileID: 1574116750646970}
   number: 0
-  movementSpeed: 200
+  movementSpeed: 250
   maxVelocityX: 400
   jumpForce: 200
-  jumpMomentum: 0
+  jumpMomentum: -290
   jumpDumping: 10
   inAirModifier: 0.7
   maxJumpTimeFrames: 15
+  flip: 1
   throwForce: {x: 150, y: 250}
+  torque: 0
   infiniteBalls: 1
 --- !u!212 &212686897685211782
 SpriteRenderer:
