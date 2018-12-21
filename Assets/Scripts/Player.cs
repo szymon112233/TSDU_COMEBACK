@@ -25,7 +25,7 @@ public class Player : MonoBehaviour {
     public float jumpDumping = 0.5f;
     public float inAirModifier = 0.7f;
     public int maxJumpTimeFrames = 40;
-    public int flip = 1;
+    private int flip = 1;
     private int jumpFrames = 0;
     
 
@@ -57,6 +57,20 @@ public class Player : MonoBehaviour {
         }
     }
 
+    public int Flip
+    {
+        get
+        {
+            return flip;
+        }
+
+        set
+        {
+            flip = value;
+            sprite.flipX = value == 1 ? false : true;
+        }
+    }
+
     private bool hasBall = true;
 
 
@@ -84,19 +98,8 @@ public class Player : MonoBehaviour {
         if (horizontal != 0)
         {
             float absXValue = Mathf.Abs(throwPosition.localPosition.x);
-            if (horizontal > 0)
-            {
-                flip = 1;
-                sprite.flipX = false;
-            }
-            else
-            {
-                flip = -1;
-                sprite.flipX = true;
-            }
-            throwPosition.localPosition = new Vector3(absXValue * flip, throwPosition.localPosition.y, throwPosition.localPosition.z);
-
-
+            Flip = horizontal > 0 ? 1 : -1;
+            throwPosition.localPosition = new Vector3(absXValue * Flip, throwPosition.localPosition.y, throwPosition.localPosition.z);
 
             if (jumping)
             {
@@ -106,7 +109,6 @@ public class Player : MonoBehaviour {
             {
                 moveVector.x = horizontal * movementSpeed * Time.deltaTime;
             }
-
         }
 
         if (jumping)
@@ -147,8 +149,8 @@ public class Player : MonoBehaviour {
     void ThrowBall()
     {
         Vector2 temp = throwForce;
-        temp.x *= flip;
-        UniverseManager.instance.SpawnBall(throwPosition.position, temp, torque * flip);
+        temp.x *= Flip;
+        UniverseManager.instance.SpawnBall(throwPosition.position, temp, torque * Flip);
         HasBall = false;
         DisableBallDetector();
         if (BallThrown != null)

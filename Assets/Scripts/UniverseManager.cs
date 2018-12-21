@@ -23,18 +23,33 @@ public class UniverseManager : MonoBehaviour {
 
     #endregion
 
+    public static System.Action<Vector2Int> scoreChanged;
+
+
     public GameObject ballPrefab;
+    public GameObject playerPrefab;
+    public Cinemachine.CinemachineTargetGroup targetGroup;
     public Player[] players;
     public PointsCounter[] pointCounters;
+    public GameObject[] spawners;
 
     public int[] score;
 
     private uint lastPlayer = 0;
     
-
-    //Initializes the game for each level.
     void InitGame()
     {
+        spawners = GameObject.FindGameObjectsWithTag("SpawnPoint");
+        players = new Player[spawners.Length];
+
+        for (int i = 0; i < spawners.Length; i++)
+        {
+            GameObject go = Instantiate(playerPrefab, spawners[i].transform.position, Quaternion.identity);
+            players[i] = go.GetComponent<Player>();
+            players[i].number = (uint)i;
+            targetGroup.AddMember(go.transform, 1, 50.0f);
+        }
+
         score = new int[players.Length];
         for (int i = 0; i < players.Length; i++)
         {
@@ -44,8 +59,16 @@ public class UniverseManager : MonoBehaviour {
         for (int j = 0; j < pointCounters.Length; j++)
         {
             int i = j;
-            pointCounters[j].PointScored += () => { Debug.Log(i); score[i]++; };
+            pointCounters[j].PointScored += () => { score[i]++; FireScoreChanged(); };
         }
+
+
+    }
+
+    private void FireScoreChanged()
+    {
+        if (scoreChanged != null)
+            scoreChanged(new Vector2Int(score[0], score[1]));
     }
 
     public void SpawnBall(Vector3 position ,Vector2 initialForce = new Vector2(), float torque = 0.0f)
