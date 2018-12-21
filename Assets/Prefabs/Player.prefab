@@ -50,6 +50,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4900459973592864}
   - component: {fileID: 212686897685211782}
+  - component: {fileID: 95802339385897412}
   m_Layer: 9
   m_Name: Sprite
   m_TagString: Untagged
@@ -231,6 +232,24 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 40, y: 110}
   m_EdgeRadius: 0
+--- !u!95 &95802339385897412
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1529586607398174}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 28185b6491e167a48a1af01d1474d4d8, type: 2}
+  m_CullingMode: 2
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!114 &114540523382720806
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -257,6 +276,7 @@ MonoBehaviour:
   throwPosition: {fileID: 4958553080913980}
   sprite: {fileID: 212686897685211782}
   ballDetector: {fileID: 1574116750646970}
+  animator: {fileID: 95802339385897412}
   number: 0
   movementSpeed: 250
   maxVelocityX: 400
@@ -265,7 +285,6 @@ MonoBehaviour:
   jumpDumping: 10
   inAirModifier: 0.7
   maxJumpTimeFrames: 15
-  flip: 1
   throwForce: {x: 150, y: 250}
   torque: 30
   infiniteBalls: 1

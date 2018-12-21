@@ -13,6 +13,7 @@ public class Player : MonoBehaviour {
     public Transform throwPosition;
     public SpriteRenderer sprite;
     public GameObject ballDetector;
+    public Animator animator;
 
     [Header("Data")]
     public uint number = 0;
@@ -54,6 +55,7 @@ public class Player : MonoBehaviour {
         set
         {
             hasBall = value;
+            animator.SetBool("HasBall", value);
         }
     }
 
@@ -68,6 +70,20 @@ public class Player : MonoBehaviour {
         {
             flip = value;
             sprite.flipX = value == 1 ? false : true;
+        }
+    }
+
+    public bool Jumping
+    {
+        get
+        {
+            return jumping;
+        }
+
+        set
+        {
+            jumping = value;
+            animator.SetBool("IsJumping", value);
         }
     }
 
@@ -101,7 +117,7 @@ public class Player : MonoBehaviour {
             Flip = horizontal > 0 ? 1 : -1;
             throwPosition.localPosition = new Vector3(absXValue * Flip, throwPosition.localPosition.y, throwPosition.localPosition.z);
 
-            if (jumping)
+            if (Jumping)
             {
                 moveVector.x = horizontal * movementSpeed * Time.deltaTime * inAirModifier;
             }
@@ -109,9 +125,14 @@ public class Player : MonoBehaviour {
             {
                 moveVector.x = horizontal * movementSpeed * Time.deltaTime;
             }
+            animator.SetBool("IsMoving",true);
+        }
+        else
+        {
+            animator.SetBool("IsMoving", false);
         }
 
-        if (jumping)
+        if (Jumping)
         {
             moveVector.y = jumpMomentum * Time.deltaTime;
             if(GameInput.instance.GetButton(GameButtons.JUMP, (int)number) && jumpFrames < maxJumpTimeFrames)
@@ -125,9 +146,9 @@ public class Player : MonoBehaviour {
 
             
         }
-        if (!jumping && GameInput.instance.GetButton(GameButtons.JUMP, (int)number))
+        if (!Jumping && GameInput.instance.GetButton(GameButtons.JUMP, (int)number))
         {
-            jumping = true;
+            Jumping = true;
             jumpFrames++;
             jumpMomentum = jumpForce;
             //Vector2 forceVector = new Vector2(0.0f, jumpForce);
@@ -178,7 +199,7 @@ public class Player : MonoBehaviour {
         Debug.LogFormat("Collision: {0}", collision.gameObject.name);
         if (collision.gameObject.CompareTag("Ground"))
         {
-            jumping = false;
+            Jumping = false;
             jumpFrames = 0;
         }
     }
