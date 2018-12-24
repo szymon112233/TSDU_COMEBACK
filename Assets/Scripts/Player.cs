@@ -14,6 +14,7 @@ public class Player : MonoBehaviour {
     public SpriteRenderer sprite;
     public GameObject ballDetector;
     public Animator animator;
+    public UnityEngine.UI.Image powerBar;
 
     [Header("Data")]
     public uint number = 0;
@@ -28,22 +29,24 @@ public class Player : MonoBehaviour {
     public int maxJumpTimeFrames = 40;
     private int flip = 1;
     private int jumpFrames = 0;
-    
+    private bool jumping = false;
 
     [Header("Throwing")]
-    public Vector2 throwForce = new Vector2();
-    public float torque = 0.0f;
+    public AnimationCurve throwForceCurveX;
+    public AnimationCurve throwForceCurveY;
+    public AnimationCurve torqueCurve;
+    public float lerpTime = 1.0f;
+    private Vector2 throwForce = new Vector2();
+    private float lerpTimer = 0.0f;
+    private float torque = 0.0f;
+    private bool throwing = false;
+    private bool lerpDir = true;
+    private bool hasBall = true;
 
     [Header("Debug")]
     public bool infiniteBalls = false;
 
-
-    private bool jumping = false;
-    private bool throwing = false;
-
     private IEnumerator EnableBallPickupCoroutineREF;
-
-
 
     private bool HasBall
     {
@@ -87,9 +90,19 @@ public class Player : MonoBehaviour {
         }
     }
 
-    private bool hasBall = true;
+    public bool Throwing
+    {
+        get
+        {
+            return throwing;
+        }
 
-
+        set
+        {
+            animator.SetBool("IsThrowing", value);
+            throwing = value;
+        }
+    }
 
     // Use this for initialization
     void Start () {
@@ -163,17 +176,45 @@ public class Player : MonoBehaviour {
     {
         if (GameInput.instance.GetButtonPressed(GameButtons.THROW, (int)number) && HasBall)
         {
+            powerBar.fillAmount = 0;
+            powerBar.gameObject.SetActive(true);
+        }
+         else if (GameInput.instance.GetButton(GameButtons.THROW, (int)number) && HasBall)
+        {
+            throwForce.x = throwForceCurveX.Evaluate(lerpTimer / lerpTime * 100.0f);
+            throwForce.y = throwForceCurveY.Evaluate(lerpTimer / lerpTime * 100.0f);
+            torque = torqueCurve.Evaluate(lerpTimer / lerpTime * 100.0f);
+            powerBar.fillAmount = lerpTimer / lerpTime;
+            if (lerpDir)
+            {
+                lerpTimer += Time.deltaTime;
+                if (lerpTimer > lerpTime)
+                    lerpDir = !lerpDir;
+            }
+            else
+            {
+                lerpTimer -= Time.deltaTime;
+                if (lerpTimer < 0)
+                    lerpDir = !lerpDir;
+            }
+
+        }
+        else if (GameInput.instance.GetButtonReleased(GameButtons.THROW, (int)number) && HasBall)
+        {
+            powerBar.gameObject.SetActive(false);
             ThrowBall();
         }
     }
 
     void ThrowBall()
     {
+        Debug.LogFormat("Throw Force: [{0}|{1}]", throwForce.x, throwForce.y);
         Vector2 temp = throwForce;
         temp.x *= Flip;
         UniverseManager.instance.SpawnBall(throwPosition.position, temp, torque * Flip);
         HasBall = false;
         DisableBallDetector();
+        lerpTimer = 0;
         if (BallThrown != null)
             BallThrown();
     }
