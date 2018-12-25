@@ -6,13 +6,16 @@ public class Player : MonoBehaviour {
 
     public System.Action BallThrown;
 
+    [Header("Debug")]
+    public bool infiniteBalls = false;
 
-    //References
     [Header("References")]
     public Rigidbody2D rigibdoy;
     public Transform throwPosition;
     public SpriteRenderer sprite;
     public GameObject ballDetector;
+    public GameObject handHitCollider;
+    public GameObject handHitAirCollider;
     public Animator animator;
     public UnityEngine.UI.Image powerBar;
 
@@ -43,10 +46,10 @@ public class Player : MonoBehaviour {
     private bool lerpDir = true;
     private bool hasBall = true;
 
-    [Header("Debug")]
-    public bool infiniteBalls = false;
+    private bool hitting = false;
 
     private IEnumerator EnableBallPickupCoroutineREF;
+    private IEnumerator DisableHitStateCoroutineREF;
 
     private bool HasBall
     {
@@ -104,6 +107,20 @@ public class Player : MonoBehaviour {
         }
     }
 
+    public bool Hitting
+    {
+        get
+        {
+            return hitting;
+        }
+
+        set
+        {
+            hitting = value;
+            animator.SetBool("IsHitting", value);
+        }
+    }
+
     // Use this for initialization
     void Start () {
         ballDetector.GetComponent<BallDetetor>().balldetected += () => { HasBall = true; };
@@ -111,9 +128,19 @@ public class Player : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        UpdateThrowing();
-
+        UpdateAction();
     }
+
+    public void GetHit(int side)
+    {
+        if (HasBall)
+        {
+            HasBall = false;
+            DisableBallDetector();
+            UniverseManager.instance.SpawnBall(gameObject.transform.position,new Vector2(150 * side, 150));
+        }
+    }
+
 
     private void FixedUpdate()
     {
@@ -124,11 +151,13 @@ public class Player : MonoBehaviour {
     {
         float horizontal = GameInput.instance.GetAxis(GameAxis.X_MOVEMENT, (int)number);
         Vector2 moveVector = new Vector2();
-        if (horizontal != 0)
+        if (horizontal != 0 && !Hitting)
         {
             float absXValue = Mathf.Abs(throwPosition.localPosition.x);
             Flip = horizontal > 0 ? 1 : -1;
             throwPosition.localPosition = new Vector3(absXValue * Flip, throwPosition.localPosition.y, throwPosition.localPosition.z);
+            handHitCollider.transform.localScale = new Vector3(Flip, 1, 1);
+            handHitAirCollider.transform.localScale = new Vector3(Flip, 1, 1);
 
             if (Jumping)
             {
@@ -171,39 +200,61 @@ public class Player : MonoBehaviour {
 
     }
 
-
-    private void UpdateThrowing()
+    private void UpdateAction()
     {
-        if (GameInput.instance.GetButtonPressed(GameButtons.THROW, (int)number) && HasBall)
+        if (HasBall)
         {
-            powerBar.fillAmount = 0;
-            powerBar.gameObject.SetActive(true);
-        }
-         else if (GameInput.instance.GetButton(GameButtons.THROW, (int)number) && HasBall)
-        {
-            throwForce.x = throwForceCurveX.Evaluate(lerpTimer / lerpTime * 100.0f);
-            throwForce.y = throwForceCurveY.Evaluate(lerpTimer / lerpTime * 100.0f);
-            torque = torqueCurve.Evaluate(lerpTimer / lerpTime * 100.0f);
-            powerBar.fillAmount = lerpTimer / lerpTime;
-            if (lerpDir)
+            if (GameInput.instance.GetButtonPressed(GameButtons.ACTION, (int)number))
             {
-                lerpTimer += Time.deltaTime;
-                if (lerpTimer > lerpTime)
-                    lerpDir = !lerpDir;
+                powerBar.fillAmount = 0;
+                powerBar.gameObject.SetActive(true);
             }
-            else
+            else if (GameInput.instance.GetButton(GameButtons.ACTION, (int)number))
             {
-                lerpTimer -= Time.deltaTime;
-                if (lerpTimer < 0)
-                    lerpDir = !lerpDir;
-            }
+                throwForce.x = throwForceCurveX.Evaluate(lerpTimer / lerpTime * 100.0f);
+                throwForce.y = throwForceCurveY.Evaluate(lerpTimer / lerpTime * 100.0f);
+                torque = torqueCurve.Evaluate(lerpTimer / lerpTime * 100.0f);
+                powerBar.fillAmount = lerpTimer / lerpTime;
+                if (lerpDir)
+                {
+                    lerpTimer += Time.deltaTime;
+                    if (lerpTimer > lerpTime)
+                        lerpDir = !lerpDir;
+                }
+                else
+                {
+                    lerpTimer -= Time.deltaTime;
+                    if (lerpTimer < 0)
+                        lerpDir = !lerpDir;
+                }
 
+            }
+            else if (GameInput.instance.GetButtonReleased(GameButtons.ACTION, (int)number))
+            {
+                powerBar.gameObject.SetActive(false);
+                ThrowBall();
+            }
         }
-        else if (GameInput.instance.GetButtonReleased(GameButtons.THROW, (int)number) && HasBall)
+        else
         {
-            powerBar.gameObject.SetActive(false);
-            ThrowBall();
+            if (GameInput.instance.GetButtonPressed(GameButtons.ACTION, (int)number) && !Hitting)
+            {
+                if (Jumping)
+                {
+                    handHitAirCollider.SetActive(true);
+                }
+                else
+                {
+                    handHitCollider.SetActive(true);
+                }
+                Hitting = true;
+                if (DisableHitStateCoroutineREF != null)
+                    StopCoroutine(DisableHitStateCoroutineREF);
+                DisableHitStateCoroutineREF = DisableHitStateCoroutine();
+                StartCoroutine(DisableHitStateCoroutineREF);
+            }
         }
+        
     }
 
     void ThrowBall()
@@ -234,6 +285,14 @@ public class Player : MonoBehaviour {
         ballDetector.SetActive(true);
     }
 
+    IEnumerator DisableHitStateCoroutine()
+    {
+        yield return new WaitForSeconds(0.5f);
+        Hitting = false;
+        handHitAirCollider.SetActive(false);
+        handHitCollider.SetActive(false);
+        DisableHitStateCoroutineREF = null;
+    }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {

@@ -11,6 +11,23 @@ Prefab:
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 1818661215439096}
   m_IsPrefabParent: 1
+--- !u!1 &1278920222618706
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4760733049649914}
+  - component: {fileID: 61675812423709606}
+  - component: {fileID: 114087492807793928}
+  m_Layer: 11
+  m_Name: HandHitCollider
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
 --- !u!1 &1472188622298006
 GameObject:
   m_ObjectHideFlags: 0
@@ -110,6 +127,23 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 0
+--- !u!1 &1905358034132128
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4803055284092756}
+  - component: {fileID: 61392580692953256}
+  - component: {fileID: 114107655626925632}
+  m_Layer: 11
+  m_Name: HandHitAirCollider
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
 --- !u!1 &1954104229807624
 GameObject:
   m_ObjectHideFlags: 0
@@ -168,8 +202,36 @@ Transform:
   - {fileID: 4958553080913980}
   - {fileID: 4399391962611988}
   - {fileID: 224862007409777300}
+  - {fileID: 4760733049649914}
+  - {fileID: 4803055284092756}
   m_Father: {fileID: 0}
   m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &4760733049649914
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1278920222618706}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4508501279137172}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &4803055284092756
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1905358034132128}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4508501279137172}
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4900459973592864
 Transform:
@@ -217,6 +279,31 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 4
+--- !u!61 &61392580692953256
+BoxCollider2D:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1905358034132128}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 30.49, y: 20.3}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 40, y: 60}
+  m_EdgeRadius: 0
 --- !u!61 &61468606145283118
 BoxCollider2D:
   m_ObjectHideFlags: 1
@@ -241,6 +328,31 @@ BoxCollider2D:
   m_AutoTiling: 0
   serializedVersion: 2
   m_Size: {x: 60, y: 120}
+  m_EdgeRadius: 0
+--- !u!61 &61675812423709606
+BoxCollider2D:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1278920222618706}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 37, y: -8}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 40, y: 25}
   m_EdgeRadius: 0
 --- !u!61 &61706079826774896
 BoxCollider2D:
@@ -312,6 +424,28 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
+--- !u!114 &114087492807793928
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1278920222618706}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b4743ace60278344b8e44fa1ddda63e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &114107655626925632
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1905358034132128}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b4743ace60278344b8e44fa1ddda63e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114540523382720806
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -359,6 +493,8 @@ MonoBehaviour:
   throwPosition: {fileID: 4958553080913980}
   sprite: {fileID: 212686897685211782}
   ballDetector: {fileID: 1574116750646970}
+  handHitCollider: {fileID: 1278920222618706}
+  handHitAirCollider: {fileID: 1905358034132128}
   animator: {fileID: 95802339385897412}
   powerBar: {fileID: 114037608806893474}
   number: 0
@@ -442,7 +578,7 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   lerpTime: 1
-  infiniteBalls: 1
+  infiniteBalls: 0
 --- !u!212 &212686897685211782
 SpriteRenderer:
   m_ObjectHideFlags: 1

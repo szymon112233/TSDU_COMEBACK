@@ -7,7 +7,7 @@ public enum GameButtons
 {
     NONE = 0,
     JUMP,
-    THROW
+    ACTION
 }
 
 public enum GameAxis
@@ -202,7 +202,7 @@ public class PCPlayer : InputPlayer
             case GameButtons.JUMP:
                 return Input.GetKey(jumpKey);
 
-            case GameButtons.THROW:
+            case GameButtons.ACTION:
                 return Input.GetKey(throwKey);
 
         }
@@ -220,7 +220,7 @@ public class PCPlayer : InputPlayer
             case GameButtons.JUMP:
                 return Input.GetKeyDown(jumpKey);
 
-            case GameButtons.THROW:
+            case GameButtons.ACTION:
                 return Input.GetKeyDown(throwKey);
 
         }
@@ -239,7 +239,7 @@ public class PCPlayer : InputPlayer
             case GameButtons.JUMP:
                 return Input.GetKeyUp(jumpKey);
 
-            case GameButtons.THROW:
+            case GameButtons.ACTION:
                 return Input.GetKeyUp(throwKey);
 
         }
