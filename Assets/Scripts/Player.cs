@@ -128,6 +128,12 @@ public class Player : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         UpdateAction();
+        UpdateClothMask();
+    }
+
+    private void UpdateClothMask()
+    {
+
     }
 
     public void GetHit(int side)
