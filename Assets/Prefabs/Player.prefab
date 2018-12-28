@@ -626,6 +626,7 @@ MonoBehaviour:
   rigibdoy: {fileID: 50386016976192442}
   throwPosition: {fileID: 4958553080913980}
   sprite: {fileID: 212686897685211782}
+  clothSprite: {fileID: 212630674999937424}
   ballDetector: {fileID: 1574116750646970}
   handHitCollider: {fileID: 1278920222618706}
   handHitAirCollider: {fileID: 1905358034132128}
