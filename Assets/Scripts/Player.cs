@@ -24,7 +24,6 @@ public class Player : MonoBehaviour {
 
     [Header("Movement")]
     public float movementSpeed = 10.0f;
-    public float maxVelocityX = 400.0f;
     public float jumpForce = 10.0f;
     public float jumpMomentum = 0.0f;
     public float jumpDumping = 0.5f;
@@ -136,6 +135,8 @@ public class Player : MonoBehaviour {
         if (HasBall)
         {
             HasBall = false;
+            Throwing = false;
+            powerBar.gameObject.SetActive(false);
             DisableBallDetector();
             UniverseManager.instance.SpawnBall(gameObject.transform.position,new Vector2(150 * side, 150));
         }
@@ -151,7 +152,7 @@ public class Player : MonoBehaviour {
     {
         float horizontal = GameInput.instance.GetAxis(GameAxis.X_MOVEMENT, (int)number);
         Vector2 moveVector = new Vector2();
-        if (horizontal != 0 && !Hitting)
+        if (horizontal != 0 && !Hitting && !Throwing)
         {
             float absXValue = Mathf.Abs(throwPosition.localPosition.x);
             Flip = horizontal > 0 ? 1 : -1;
@@ -208,6 +209,8 @@ public class Player : MonoBehaviour {
             {
                 powerBar.fillAmount = 0;
                 powerBar.gameObject.SetActive(true);
+                animator.ResetTrigger("BallThrown");
+                Throwing = true;
             }
             else if (GameInput.instance.GetButton(GameButtons.ACTION, (int)number))
             {
@@ -232,6 +235,7 @@ public class Player : MonoBehaviour {
             else if (GameInput.instance.GetButtonReleased(GameButtons.ACTION, (int)number))
             {
                 powerBar.gameObject.SetActive(false);
+                Throwing = false;
                 ThrowBall();
             }
         }
@@ -266,6 +270,7 @@ public class Player : MonoBehaviour {
         HasBall = false;
         DisableBallDetector();
         lerpTimer = 0;
+        animator.SetTrigger("BallThrown");
         if (BallThrown != null)
             BallThrown();
     }
