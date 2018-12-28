@@ -6,6 +6,7 @@ Shader "Unlit/MaskedTexture"
 	{
 		[PerRendererData] _MainTex("Sprite Texture", 2D) = "white" {}
 		_MaskTex("Mask Texture", 2D) = "white" {}
+		_SkinColor("Skin", Color) = (1,1,1,1)
 		_TshirtColor("Tshirt", Color) = (1,1,1,1)
 		_PantsColor("Pants", Color) = (0.3245,0.3348,0.3407,1)
 		_ShoesColor("Shoes", Color) = (0.7421875,0.796875,0.81640625,1)
@@ -94,15 +95,19 @@ Shader "Unlit/MaskedTexture"
 				fixed4 _TshirtColor;
 				fixed4 _PantsColor;
 				fixed4 _ShoesColor;
-				
+				fixed4 _SkinColor;
+
 				fixed4 frag(v2f IN) : SV_Target
 				{
-					float4 color = SampleSpriteTexture(IN.texcoord);
+					float4 text = SampleSpriteTexture(IN.texcoord);
+					float4 color = text;
 					float4 mask = SampleMaskTexture(IN.texcoord.xy);
-					color.rgb = lerp(color.rgb, _TshirtColor * color.rgb, mask.r * mask.a);
 
-					color.rgb = lerp(color.rgb, _PantsColor * color.rgb, mask.g * mask.a);
-					color.rgb = lerp(color.rgb, _ShoesColor * color.rgb, mask.b * mask.a);
+					color.rgb = _SkinColor * text.rgb;
+
+					color.rgb = lerp(color.rgb, _TshirtColor * text.rgb, mask.r * mask.a);
+					color.rgb = lerp(color.rgb, _PantsColor * text.rgb, mask.g * mask.a);
+					color.rgb = lerp(color.rgb, _ShoesColor * text.rgb, mask.b * mask.a);
 					
 					color.rgb *= color.a;
 					return color;
