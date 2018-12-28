@@ -24,12 +24,16 @@ public class GameplayUI : MonoBehaviour {
 
     #endregion
 
+    public Font font;
+
     private void Init()
     {
         UniverseManager.scoreChanged += UpdateScoreText;
+        font.material.mainTexture.filterMode = FilterMode.Point;
     }
 
-    public Text scoreText;
+    public Text scoreTextLeft;
+    public Text scoreTextRight;
 
     // Use this for initialization
     void Start () {
@@ -38,7 +42,8 @@ public class GameplayUI : MonoBehaviour {
 
     void UpdateScoreText(Vector2Int scores)
     {
-        scoreText.text = string.Format("{0}:{1}", scores.x, scores.y);
+        scoreTextLeft.text = string.Format("{0}", scores.x);
+        scoreTextRight.text = string.Format("{0}", scores.y);
     }
 	
 	// Update is called once per frame
