@@ -68,6 +68,7 @@ GameObject:
   - component: {fileID: 4900459973592864}
   - component: {fileID: 212686897685211782}
   - component: {fileID: 95802339385897412}
+  - component: {fileID: 114322386927543074}
   m_Layer: 9
   m_Name: Sprite
   m_TagString: Untagged
@@ -579,6 +580,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b4743ace60278344b8e44fa1ddda63e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &114322386927543074
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1529586607398174}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e0ccfd11cc161934997d99bfe158c3a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sprite: {fileID: 0}
+  clothSprite: {fileID: 0}
 --- !u!114 &114540523382720806
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -626,7 +640,6 @@ MonoBehaviour:
   rigibdoy: {fileID: 50386016976192442}
   throwPosition: {fileID: 4958553080913980}
   sprite: {fileID: 212686897685211782}
-  clothSprite: {fileID: 212630674999937424}
   ballDetector: {fileID: 1574116750646970}
   handHitCollider: {fileID: 1278920222618706}
   handHitAirCollider: {fileID: 1905358034132128}
