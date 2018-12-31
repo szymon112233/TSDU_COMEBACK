@@ -43,7 +43,7 @@ public class Player : MonoBehaviour {
     private float torque = 0.0f;
     private bool throwing = false;
     private bool lerpDir = true;
-    private bool hasBall = true;
+    private bool hasBall = false;
 
     private bool hitting = false;
 
@@ -128,6 +128,25 @@ public class Player : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         UpdateAction();
+    }
+
+    public void ResetState()
+    {
+        Flip = 1;
+        jumpFrames = 0;
+        Jumping = false;
+
+        throwForce = new Vector2();
+        lerpTimer = 0.0f;
+        torque = 0.0f;
+        Throwing = false;
+        lerpDir = true;
+        HasBall = false;
+
+        hitting = false;
+
+        rigibdoy.velocity = new Vector2();
+
     }
 
     public void GetHit(int side)

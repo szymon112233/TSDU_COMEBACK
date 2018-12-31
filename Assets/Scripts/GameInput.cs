@@ -37,14 +37,15 @@ public class GameInput : MonoBehaviour {
 
     #endregion
 
-    
     public List<InputPlayer> players = new List<InputPlayer>();
+    bool globalInputEnabled = true;
 
     private void Init()
     {
         PCPlayer player0 = new PCPlayer
         {
             id = 0,
+            inputEnabled = true,
             jumpKey = KeyCode.UpArrow,
             throwKey = KeyCode.Space,
             xAxisName = "Horizontal",
@@ -56,6 +57,7 @@ public class GameInput : MonoBehaviour {
         PCPlayer player1 = new PCPlayer
         {
             id = 1,
+            inputEnabled = true,
             jumpKey = KeyCode.W,
             throwKey = KeyCode.LeftControl,
             xAxisName = "Horizontal2",
@@ -70,16 +72,17 @@ public class GameInput : MonoBehaviour {
     {
         if (player < 0)
         {
-            foreach(InputPlayer pl in players)
-            {
-                if (pl.GetButton(button))
-                    return true;
-            }
+            if (globalInputEnabled)
+                foreach(InputPlayer pl in players)
+                {
+                    if (pl.GetButton(button))
+                        return true;
+                }
         }
         else
         {
             if (players.Count > player)
-                return players[player].GetButton(button);
+                return players[player].inputEnabled && players[player].GetButton(button);
             else
                 return false;
         }
@@ -91,16 +94,17 @@ public class GameInput : MonoBehaviour {
     {
         if (player < 0)
         {
-            foreach (InputPlayer pl in players)
-            {
-                if (pl.GetButtonPressed(button))
-                    return true;
-            }
+            if (globalInputEnabled)
+                foreach (InputPlayer pl in players)
+                {
+                    if (pl.GetButtonPressed(button))
+                        return true;
+                }
         }
         else
         {
             if (players.Count > player)
-                return players[player].GetButtonPressed(button);
+                return players[player].inputEnabled && players[player].GetButtonPressed(button);
             else
                 return false;
         }
@@ -112,16 +116,17 @@ public class GameInput : MonoBehaviour {
     {
         if (player < 0)
         {
-            foreach (InputPlayer pl in players)
-            {
-                if (pl.GetButtonReleased(button))
-                    return true;
-            }
+            if (globalInputEnabled)
+                foreach (InputPlayer pl in players)
+                {
+                    if (pl.GetButtonReleased(button))
+                        return true;
+                }
         }
         else
         {
             if (players.Count > player)
-                return players[player].GetButtonReleased(button);
+                return players[player].inputEnabled && players[player].GetButtonReleased(button);
             else
                 return false;
         }
@@ -133,6 +138,8 @@ public class GameInput : MonoBehaviour {
     {
         if (player < 0)
         {
+            if (!globalInputEnabled)
+                return 0.0f;
             float sum = 0.0f;
             foreach (InputPlayer pl in players)
             {
@@ -147,12 +154,31 @@ public class GameInput : MonoBehaviour {
         }
         else
         {
-            if (players.Count > player)
+            if (players.Count > player && players[player].inputEnabled)
                 return players[player].GetAxis(axis);
             else
                 return 0.0f;
         }
 
+    }
+
+    public void SetInputEnabled(bool enabled, int player = -1)
+    {
+        if (player == -1)
+        {
+            foreach (InputPlayer pl in players)
+            {
+                pl.inputEnabled = enabled;
+            }
+            globalInputEnabled = enabled;
+        }
+        else
+        {
+            if (players.Count > player)
+                players[player].inputEnabled = enabled;
+            else
+                Debug.LogErrorFormat("player ({0}) is greater than or equal to players.Count ({1})", player, players.Count);
+        }
     }
 }
 
@@ -160,6 +186,7 @@ public class GameInput : MonoBehaviour {
 public class InputPlayer
 {
     public int id;
+    public bool inputEnabled;
 
 
     public virtual bool GetButton(GameButtons button)
