@@ -17,6 +17,7 @@ public class Player : MonoBehaviour {
     public GameObject handHitCollider;
     public GameObject handHitAirCollider;
     public Animator animator;
+    public GameObject ballPosition;
     public UnityEngine.UI.Image powerBar;
 
     [Header("Data")]
@@ -61,6 +62,7 @@ public class Player : MonoBehaviour {
         {
             hasBall = value;
             animator.SetBool("HasBall", value);
+            ballPosition.SetActive(value);
         }
     }
 
@@ -74,7 +76,7 @@ public class Player : MonoBehaviour {
         set
         {
             flip = value;
-            sprite.flipX = value == 1 ? false : true;
+            transform.localScale = new Vector3(value, ballPosition.transform.localScale.y, ballPosition.transform.localScale.z);
         }
     }
 
@@ -173,9 +175,7 @@ public class Player : MonoBehaviour {
         Vector2 moveVector = new Vector2();
         if (horizontal != 0 && !Hitting && !Throwing)
         {
-            float absXValue = Mathf.Abs(throwPosition.localPosition.x);
             Flip = horizontal > 0 ? 1 : -1;
-            throwPosition.localPosition = new Vector3(absXValue * Flip, throwPosition.localPosition.y, throwPosition.localPosition.z);
             handHitCollider.transform.localScale = new Vector3(Flip, 1, 1);
             handHitAirCollider.transform.localScale = new Vector3(Flip, 1, 1);
 
@@ -285,7 +285,7 @@ public class Player : MonoBehaviour {
         Debug.LogFormat("Throw Force: [{0}|{1}]", throwForce.x, throwForce.y);
         Vector2 temp = throwForce;
         temp.x *= Flip;
-        UniverseManager.instance.SpawnBall(throwPosition.position, temp, torque * Flip);
+        UniverseManager.instance.SpawnBall(ballPosition.transform.position, temp, torque * Flip);
         HasBall = false;
         DisableBallDetector();
         lerpTimer = 0;
