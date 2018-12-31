@@ -24,6 +24,8 @@ public class UniverseManager : MonoBehaviour {
     #endregion
 
     public static System.Action<Vector2Int> scoreChanged;
+    public static System.Action<Vector2Int> foulsChanged;
+    public static System.Action<float> timeChanged;
 
 
     public GameObject ballPrefab;
@@ -34,6 +36,9 @@ public class UniverseManager : MonoBehaviour {
     public GameObject[] spawners;
 
     public int[] score;
+    public int[] fauls;
+    public float matchTimerStartValue = 180;
+    public float matchTimer;
 
     private uint lastPlayer = 0;
     
@@ -51,6 +56,7 @@ public class UniverseManager : MonoBehaviour {
         }
 
         score = new int[players.Length];
+        fauls = new int[players.Length];
         for (int i = 0; i < players.Length; i++)
         {
             int j = i;
@@ -62,13 +68,21 @@ public class UniverseManager : MonoBehaviour {
             pointCounters[j].PointScored += () => { score[i]++; FireScoreChanged(); };
         }
 
-
+        matchTimer = matchTimerStartValue;
     }
 
     private void FireScoreChanged()
     {
         if (scoreChanged != null)
             scoreChanged(new Vector2Int(score[0], score[1]));
+    }
+
+    private void Update()
+    {
+        if (matchTimer > 0)
+            matchTimer -= Time.deltaTime;
+        if (timeChanged != null)
+            timeChanged(matchTimer);
     }
 
     public void SpawnBall(Vector3 position ,Vector2 initialForce = new Vector2(), float torque = 0.0f)
