@@ -19,64 +19,33 @@ AnimationClip:
   m_PPtrCurves:
   - curve:
     - time: 0
-      value: {fileID: 21300000, guid: 914d2e90f4838654687205cfced1be1e, type: 3}
+      value: {fileID: 21300000, guid: 1983bb9b10b22ba4eab9684869dc1ef8, type: 3}
     - time: 0.083333336
-      value: {fileID: 21300000, guid: 319812dd665a40c429607046e17ecc4c, type: 3}
+      value: {fileID: 21300002, guid: 1983bb9b10b22ba4eab9684869dc1ef8, type: 3}
     - time: 0.16666667
-      value: {fileID: 21300000, guid: e7e0e7125aac8fa4caaeb4c98dd29fd9, type: 3}
+      value: {fileID: 21300004, guid: 1983bb9b10b22ba4eab9684869dc1ef8, type: 3}
     - time: 0.25
-      value: {fileID: 21300000, guid: 936abdd85048ce847a9df25b0a0497e9, type: 3}
+      value: {fileID: 21300006, guid: 1983bb9b10b22ba4eab9684869dc1ef8, type: 3}
     - time: 0.33333334
-      value: {fileID: 21300000, guid: dbf388cd34391a247909cb2c0f145151, type: 3}
+      value: {fileID: 21300008, guid: 1983bb9b10b22ba4eab9684869dc1ef8, type: 3}
     - time: 0.41666666
-      value: {fileID: 21300000, guid: f76859b42330d7a43a47b01c5887cb0c, type: 3}
+      value: {fileID: 21300010, guid: 1983bb9b10b22ba4eab9684869dc1ef8, type: 3}
     - time: 0.5
-      value: {fileID: 21300000, guid: 05eff874c1e3e054b9c12fb2645463f9, type: 3}
+      value: {fileID: 21300012, guid: 1983bb9b10b22ba4eab9684869dc1ef8, type: 3}
     - time: 0.5833333
-      value: {fileID: 21300000, guid: 1ee321193bb3fe44193f9610d1246c00, type: 3}
+      value: {fileID: 21300014, guid: 1983bb9b10b22ba4eab9684869dc1ef8, type: 3}
     - time: 0.6666667
-      value: {fileID: 21300000, guid: adf21fced412ea84b86b0e18db03182e, type: 3}
+      value: {fileID: 21300016, guid: 1983bb9b10b22ba4eab9684869dc1ef8, type: 3}
     - time: 0.75
-      value: {fileID: 21300000, guid: 11fa6987c0248f241bec0a206c3b4fc0, type: 3}
+      value: {fileID: 21300018, guid: 1983bb9b10b22ba4eab9684869dc1ef8, type: 3}
     - time: 0.8333333
-      value: {fileID: 21300000, guid: 0fa4666c646d801469a357afe54ab4aa, type: 3}
+      value: {fileID: 21300020, guid: 1983bb9b10b22ba4eab9684869dc1ef8, type: 3}
     - time: 0.9166667
-      value: {fileID: 21300000, guid: 0dfe0200115498f4eb615884a48ce263, type: 3}
+      value: {fileID: 21300022, guid: 1983bb9b10b22ba4eab9684869dc1ef8, type: 3}
     - time: 1
-      value: {fileID: 21300000, guid: 914d2e90f4838654687205cfced1be1e, type: 3}
+      value: {fileID: 21300000, guid: 1983bb9b10b22ba4eab9684869dc1ef8, type: 3}
     attribute: m_Sprite
     path: 
-    classID: 212
-    script: {fileID: 0}
-  - curve:
-    - time: 0
-      value: {fileID: 21300000, guid: 4a392feae9bff114882b397c439c6e6e, type: 3}
-    - time: 0.083333336
-      value: {fileID: 21300000, guid: 2c56fddbe2080bd4c9fc6784ea753fe9, type: 3}
-    - time: 0.16666667
-      value: {fileID: 21300000, guid: 3cf737299442c3f439ad19bc48796562, type: 3}
-    - time: 0.25
-      value: {fileID: 21300000, guid: bdb71de2238b61442aea1d8dee2cd155, type: 3}
-    - time: 0.33333334
-      value: {fileID: 21300000, guid: 339b8c8a4c0f36941aebe74a08162939, type: 3}
-    - time: 0.41666666
-      value: {fileID: 21300000, guid: a298be52018653d49858bbb93a346ad2, type: 3}
-    - time: 0.5
-      value: {fileID: 21300000, guid: 0137c7fa8d4217c4698c128c90471da5, type: 3}
-    - time: 0.5833333
-      value: {fileID: 21300000, guid: 379a78946361aff48bc46707f37f9819, type: 3}
-    - time: 0.6666667
-      value: {fileID: 21300000, guid: f4730df2cc18d3d4b82bc39db2bd258f, type: 3}
-    - time: 0.75
-      value: {fileID: 21300000, guid: fe3f4800548afff4a8cc02f66f0c6fe7, type: 3}
-    - time: 0.8333333
-      value: {fileID: 21300000, guid: 16b490e971077a5449dd791e75342516, type: 3}
-    - time: 0.9166667
-      value: {fileID: 21300000, guid: e9443e9200ebac54db3941cd886e1283, type: 3}
-    - time: 1
-      value: {fileID: 21300000, guid: 4a392feae9bff114882b397c439c6e6e, type: 3}
-    attribute: m_Sprite
-    path: ClothMask
     classID: 212
     script: {fileID: 0}
   m_SampleRate: 60
@@ -93,40 +62,20 @@ AnimationClip:
       typeID: 212
       customType: 23
       isPPtrCurve: 1
-    - serializedVersion: 2
-      path: 1011114717
-      attribute: 0
-      script: {fileID: 0}
-      typeID: 212
-      customType: 23
-      isPPtrCurve: 1
     pptrCurveMapping:
-    - {fileID: 21300000, guid: 914d2e90f4838654687205cfced1be1e, type: 3}
-    - {fileID: 21300000, guid: 319812dd665a40c429607046e17ecc4c, type: 3}
-    - {fileID: 21300000, guid: e7e0e7125aac8fa4caaeb4c98dd29fd9, type: 3}
-    - {fileID: 21300000, guid: 936abdd85048ce847a9df25b0a0497e9, type: 3}
-    - {fileID: 21300000, guid: dbf388cd34391a247909cb2c0f145151, type: 3}
-    - {fileID: 21300000, guid: f76859b42330d7a43a47b01c5887cb0c, type: 3}
-    - {fileID: 21300000, guid: 05eff874c1e3e054b9c12fb2645463f9, type: 3}
-    - {fileID: 21300000, guid: 1ee321193bb3fe44193f9610d1246c00, type: 3}
-    - {fileID: 21300000, guid: adf21fced412ea84b86b0e18db03182e, type: 3}
-    - {fileID: 21300000, guid: 11fa6987c0248f241bec0a206c3b4fc0, type: 3}
-    - {fileID: 21300000, guid: 0fa4666c646d801469a357afe54ab4aa, type: 3}
-    - {fileID: 21300000, guid: 0dfe0200115498f4eb615884a48ce263, type: 3}
-    - {fileID: 21300000, guid: 914d2e90f4838654687205cfced1be1e, type: 3}
-    - {fileID: 21300000, guid: 4a392feae9bff114882b397c439c6e6e, type: 3}
-    - {fileID: 21300000, guid: 2c56fddbe2080bd4c9fc6784ea753fe9, type: 3}
-    - {fileID: 21300000, guid: 3cf737299442c3f439ad19bc48796562, type: 3}
-    - {fileID: 21300000, guid: bdb71de2238b61442aea1d8dee2cd155, type: 3}
-    - {fileID: 21300000, guid: 339b8c8a4c0f36941aebe74a08162939, type: 3}
-    - {fileID: 21300000, guid: a298be52018653d49858bbb93a346ad2, type: 3}
-    - {fileID: 21300000, guid: 0137c7fa8d4217c4698c128c90471da5, type: 3}
-    - {fileID: 21300000, guid: 379a78946361aff48bc46707f37f9819, type: 3}
-    - {fileID: 21300000, guid: f4730df2cc18d3d4b82bc39db2bd258f, type: 3}
-    - {fileID: 21300000, guid: fe3f4800548afff4a8cc02f66f0c6fe7, type: 3}
-    - {fileID: 21300000, guid: 16b490e971077a5449dd791e75342516, type: 3}
-    - {fileID: 21300000, guid: e9443e9200ebac54db3941cd886e1283, type: 3}
-    - {fileID: 21300000, guid: 4a392feae9bff114882b397c439c6e6e, type: 3}
+    - {fileID: 21300000, guid: 1983bb9b10b22ba4eab9684869dc1ef8, type: 3}
+    - {fileID: 21300002, guid: 1983bb9b10b22ba4eab9684869dc1ef8, type: 3}
+    - {fileID: 21300004, guid: 1983bb9b10b22ba4eab9684869dc1ef8, type: 3}
+    - {fileID: 21300006, guid: 1983bb9b10b22ba4eab9684869dc1ef8, type: 3}
+    - {fileID: 21300008, guid: 1983bb9b10b22ba4eab9684869dc1ef8, type: 3}
+    - {fileID: 21300010, guid: 1983bb9b10b22ba4eab9684869dc1ef8, type: 3}
+    - {fileID: 21300012, guid: 1983bb9b10b22ba4eab9684869dc1ef8, type: 3}
+    - {fileID: 21300014, guid: 1983bb9b10b22ba4eab9684869dc1ef8, type: 3}
+    - {fileID: 21300016, guid: 1983bb9b10b22ba4eab9684869dc1ef8, type: 3}
+    - {fileID: 21300018, guid: 1983bb9b10b22ba4eab9684869dc1ef8, type: 3}
+    - {fileID: 21300020, guid: 1983bb9b10b22ba4eab9684869dc1ef8, type: 3}
+    - {fileID: 21300022, guid: 1983bb9b10b22ba4eab9684869dc1ef8, type: 3}
+    - {fileID: 21300000, guid: 1983bb9b10b22ba4eab9684869dc1ef8, type: 3}
   m_AnimationClipSettings:
     serializedVersion: 2
     m_AdditiveReferencePoseClip: {fileID: 0}
@@ -152,108 +101,4 @@ AnimationClip:
   m_HasGenericRootTransform: 0
   m_HasMotionFloatCurves: 0
   m_GenerateMotionCurves: 0
-  m_Events:
-  - time: 0
-    functionName: set_Mask
-    data: 
-    objectReferenceParameter: {fileID: 21300000, guid: 4a392feae9bff114882b397c439c6e6e,
-      type: 3}
-    floatParameter: 0
-    intParameter: 0
-    messageOptions: 0
-  - time: 0.083333336
-    functionName: set_Mask
-    data: 
-    objectReferenceParameter: {fileID: 21300000, guid: 2c56fddbe2080bd4c9fc6784ea753fe9,
-      type: 3}
-    floatParameter: 0
-    intParameter: 0
-    messageOptions: 0
-  - time: 0.16666667
-    functionName: set_Mask
-    data: 
-    objectReferenceParameter: {fileID: 21300000, guid: 3cf737299442c3f439ad19bc48796562,
-      type: 3}
-    floatParameter: 0
-    intParameter: 0
-    messageOptions: 0
-  - time: 0.25
-    functionName: set_Mask
-    data: 
-    objectReferenceParameter: {fileID: 21300000, guid: bdb71de2238b61442aea1d8dee2cd155,
-      type: 3}
-    floatParameter: 0
-    intParameter: 0
-    messageOptions: 0
-  - time: 0.33333334
-    functionName: set_Mask
-    data: 
-    objectReferenceParameter: {fileID: 21300000, guid: 339b8c8a4c0f36941aebe74a08162939,
-      type: 3}
-    floatParameter: 0
-    intParameter: 0
-    messageOptions: 0
-  - time: 0.41666666
-    functionName: set_Mask
-    data: 
-    objectReferenceParameter: {fileID: 21300000, guid: a298be52018653d49858bbb93a346ad2,
-      type: 3}
-    floatParameter: 0
-    intParameter: 0
-    messageOptions: 0
-  - time: 0.5
-    functionName: set_Mask
-    data: 
-    objectReferenceParameter: {fileID: 21300000, guid: 0137c7fa8d4217c4698c128c90471da5,
-      type: 3}
-    floatParameter: 0
-    intParameter: 0
-    messageOptions: 0
-  - time: 0.5833333
-    functionName: set_Mask
-    data: 
-    objectReferenceParameter: {fileID: 21300000, guid: 379a78946361aff48bc46707f37f9819,
-      type: 3}
-    floatParameter: 0
-    intParameter: 0
-    messageOptions: 0
-  - time: 0.6666667
-    functionName: set_Mask
-    data: 
-    objectReferenceParameter: {fileID: 21300000, guid: f4730df2cc18d3d4b82bc39db2bd258f,
-      type: 3}
-    floatParameter: 0
-    intParameter: 0
-    messageOptions: 0
-  - time: 0.75
-    functionName: set_Mask
-    data: 
-    objectReferenceParameter: {fileID: 21300000, guid: fe3f4800548afff4a8cc02f66f0c6fe7,
-      type: 3}
-    floatParameter: 0
-    intParameter: 0
-    messageOptions: 0
-  - time: 0.8333333
-    functionName: set_Mask
-    data: 
-    objectReferenceParameter: {fileID: 21300000, guid: 16b490e971077a5449dd791e75342516,
-      type: 3}
-    floatParameter: 0
-    intParameter: 0
-    messageOptions: 0
-  - time: 0.9166667
-    functionName: set_Mask
-    data: 
-    objectReferenceParameter: {fileID: 21300000, guid: e9443e9200ebac54db3941cd886e1283,
-      type: 3}
-    floatParameter: 0
-    intParameter: 0
-    messageOptions: 0
-  - time: 1
-    functionName: set_Mask
-    data: 
-    objectReferenceParameter: {fileID: 21300000, guid: 4a392feae9bff114882b397c439c6e6e,
-      type: 3}
-    floatParameter: 0
-    intParameter: 0
-    messageOptions: 0
+  m_Events: []
