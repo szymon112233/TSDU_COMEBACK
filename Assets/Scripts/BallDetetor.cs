@@ -6,21 +6,15 @@ public class BallDetetor : MonoBehaviour {
 
     public System.Action balldetected;
 
-
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (balldetected != null)
-            balldetected.Invoke();
-        Destroy(collision.gameObject);
+        if (collision.gameObject != null && !collision.gameObject.GetComponent<BallCollisionDetector>().PickedUp)
+        {
+            collision.gameObject.GetComponent<BallCollisionDetector>().PickedUp = true;
+            if (balldetected != null)
+                balldetected.Invoke();
+            Destroy(collision.gameObject);
+        }
+        
     }
-
-    // Use this for initialization
-    void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
 }

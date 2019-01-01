@@ -5,6 +5,7 @@ using UnityEngine;
 public class BallCollisionDetector : MonoBehaviour {
 
     public System.Action OnCollisionWithSurface;
+    public bool PickedUp = false;
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
