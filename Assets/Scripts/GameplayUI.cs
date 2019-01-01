@@ -11,13 +11,23 @@ public class GameplayUI : MonoBehaviour {
     }
 
     public Font font;
+    [Header("Scoreboard")]
     public Text scoreTextLeft;
     public Text scoreTextRight;
-    public Text falusTextLeft;
-    public Text faulsTextRight;
+    public Text folusTextLeft;
+    public Text foulsTextRight;
     public Text timeText;
     public Image colorBallImageRed;
     public Image colorBallImageBlue;
+    [Header("Summary")]
+    public GameObject afterMatchSummary;
+    public Text scoreTextLeftSummary;
+    public Text scoreTextRightSummary;
+    public Text foulsTextLeftSummary;
+    public Text foulsTextRightSummary;
+    public GameObject p1winsImage;
+    public GameObject p2winsImage;
+    public GameObject tieImage;
 
     private Vector2Int score;
     private Vector2Int folus;
@@ -26,8 +36,8 @@ public class GameplayUI : MonoBehaviour {
     {
         scoreTextLeft.text = "0";
         scoreTextRight.text = "0";
-        falusTextLeft.text = "0";
-        faulsTextRight.text = "0";
+        folusTextLeft.text = "0";
+        foulsTextRight.text = "0";
         timeText.text = "0:0";
         colorBallImageRed.fillAmount = 0.5f;
         colorBallImageBlue.fillAmount = 0.5f;
@@ -35,6 +45,7 @@ public class GameplayUI : MonoBehaviour {
         UniverseManager.FoulsChanged += UpdateFaulText;
         UniverseManager.TimeChanged += UpdateTimeText;
         UniverseManager.EndOfTheMatch += OnEndMatch;
+        UniverseManager.MatchRestarted += HideSummaryPanel;
         font.material.mainTexture.filterMode = FilterMode.Point;
     }
 
@@ -59,20 +70,40 @@ public class GameplayUI : MonoBehaviour {
 
     void UpdateFaulText(Vector2Int folus)
     {
-        falusTextLeft.text = string.Format("{0}", folus.x);
-        faulsTextRight.text = string.Format("{0}", folus.y);
+        folusTextLeft.text = string.Format("{0}", folus.x);
+        foulsTextRight.text = string.Format("{0}", folus.y);
 
         this.folus = folus;
     }
 
     void OnEndMatch(Vector2Int finalPoints)
     {
+        foulsTextLeftSummary.text = string.Format("{0}", folus.x);
+        foulsTextRightSummary.text = string.Format("{0}", folus.y);
 
+        scoreTextLeftSummary.text = string.Format("{0}", finalPoints.x);
+        scoreTextRightSummary.text = string.Format("{0}", finalPoints.y);
+        if (finalPoints.x > finalPoints.y)
+            p1winsImage.SetActive(true);
+        else if (finalPoints.x < finalPoints.y)
+            p2winsImage.SetActive(true);
+        else
+            tieImage.SetActive(true);
+
+        afterMatchSummary.SetActive(true);
     }
 
     void UpdateTimeText(float time)
     {
         timeText.text = string.Format("{0}:{1}", ((int)time / 60).ToString("D2"), (Mathf.RoundToInt(time % 60)).ToString("D2")  );
+    }
+
+    public void HideSummaryPanel()
+    {
+        p1winsImage.SetActive(false);
+        p2winsImage.SetActive(false);
+        tieImage.SetActive(false);
+        afterMatchSummary.SetActive(false);
     }
 
 }

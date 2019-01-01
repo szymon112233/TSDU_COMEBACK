@@ -35,6 +35,7 @@ public class UniverseManager : MonoBehaviour {
     public static System.Action<Vector2Int> FoulsChanged;
     public static System.Action<float> TimeChanged;
     public static System.Action<Vector2Int> EndOfTheMatch;
+    public static System.Action MatchRestarted;
 
     public GameObject ballPrefab;
     public GameObject playerPrefab;
@@ -133,6 +134,8 @@ public class UniverseManager : MonoBehaviour {
         ResetPositons();
         // Set AFTER Reset Positions so that a ball already exists
         CurrentState = MatchState.BEFORE;
+        if (MatchRestarted != null)
+            MatchRestarted();
     }
 
     private void FireScoreChanged()
@@ -193,7 +196,6 @@ public class UniverseManager : MonoBehaviour {
         yield return new WaitForSeconds(2);
         if (EndOfTheMatch != null)
             EndOfTheMatch(new Vector2Int(score[0] - fouls[0], score[1] - fouls[1]));
-        GameInput.instance.SetInputEnabled(true);
         Debug.Log("End of the match!");
     }
 }
