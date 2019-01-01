@@ -38,6 +38,8 @@ public class UniverseManager : MonoBehaviour {
     public static System.Action MatchRestarted;
 
     public GameObject ballPrefab;
+    public Sprite[] ballColors;
+    public int currentBallColor;
     public GameObject playerPrefab;
     public Cinemachine.CinemachineTargetGroup targetGroup;
     public Player[] players;
@@ -64,13 +66,8 @@ public class UniverseManager : MonoBehaviour {
 
         set
         {
-            currentState = value;
-            if (value == MatchState.BEFORE)
-            {
-                currentBall.GetComponent<Rigidbody2D>().simulated = false;
-                GameInput.instance.SetInputEnabled(false);
-            }    
-            else if (value == MatchState.MATCH)
+            currentState = value; 
+            if (value == MatchState.MATCH)
             {
                 currentBall.GetComponent<Rigidbody2D>().simulated = true;
                 GameInput.instance.SetInputEnabled(true);
@@ -88,6 +85,7 @@ public class UniverseManager : MonoBehaviour {
         {
             GameObject go = Instantiate(playerPrefab, spawners[i].transform.position, Quaternion.identity);
             players[i] = go.GetComponent<Player>();
+            players[i].ballPosition.GetComponent<SpriteRenderer>().sprite = ballColors[currentBallColor];
             players[i].number = (uint)i;
             targetGroup.AddMember(go.transform, 1, 50.0f);
         }
@@ -115,13 +113,13 @@ public class UniverseManager : MonoBehaviour {
             players[i].transform.position = spawners[i].transform.position;
             players[i].ResetState();
         }
-        if (currentBall != null)
-            DestroyImmediate(currentBall);
-        currentBall = Instantiate(ballPrefab, ballSpawnPoint.position, Quaternion.identity);
+        SpawnBall(ballSpawnPoint.position);
+
     }
 
     private void ResetState()
     {
+        CurrentState = MatchState.BEFORE;
         for (int i = 0; i < players.Length; i++)
         {
             score[i] = 0;
@@ -132,8 +130,8 @@ public class UniverseManager : MonoBehaviour {
         FireScoreChanged();
         FireFoulsChanged();
         ResetPositons();
-        // Set AFTER Reset Positions so that a ball already exists
-        CurrentState = MatchState.BEFORE;
+        currentBall.GetComponent<Rigidbody2D>().simulated = false;
+        GameInput.instance.SetInputEnabled(false);
         if (MatchRestarted != null)
             MatchRestarted();
     }
@@ -147,6 +145,18 @@ public class UniverseManager : MonoBehaviour {
     {
         if (FoulsChanged != null)
             FoulsChanged(new Vector2Int(fouls[0], fouls[1]));
+    }
+
+    public void SetBallColor(int color)
+    {
+        if (color < 0 || color > ballColors.Length - 1 )
+        {
+            Debug.LogError("Invalid color number!");
+            return;
+        }
+            
+        currentBallColor = color;
+        
     }
 
     private void Update()
@@ -169,13 +179,14 @@ public class UniverseManager : MonoBehaviour {
             ResetState();
     }
 
-    public void SpawnBall(Vector3 position ,Vector2 initialForce = new Vector2(), float torque = 0.0f)
+    public void SpawnBall(Vector3 position, Vector2 initialForce = new Vector2(), float torque = 0.0f)
     {
         if (currentBall != null)
             DestroyImmediate(currentBall);
         currentBall = Instantiate(ballPrefab, position, Quaternion.identity);
         currentBall.GetComponent<Rigidbody2D>().AddForce(initialForce, ForceMode2D.Impulse);
         currentBall.GetComponent<Rigidbody2D>().AddTorque(torque, ForceMode2D.Impulse);
+        currentBall.GetComponent<SpriteRenderer>().sprite = ballColors[currentBallColor];
         if (currentState == MatchState.AFTER)
         {
             currentBall.GetComponent<BallCollisionDetector>().OnCollisionWithSurface += OnBallCollision;
