@@ -159,7 +159,7 @@ public class Player : MonoBehaviour {
             Throwing = false;
             powerBar.gameObject.SetActive(false);
             DisableBallDetector();
-            UniverseManager.instance.SpawnBall(gameObject.transform.position,new Vector2(150 * side, 150));
+            UniverseManager.instance.SpawnBall(ballPosition.transform.position,new Vector2(150 * side, 150));
         }
     }
 
@@ -176,8 +176,6 @@ public class Player : MonoBehaviour {
         if (horizontal != 0 && !Hitting && !Throwing)
         {
             Flip = horizontal > 0 ? 1 : -1;
-            handHitCollider.transform.localScale = new Vector3(Flip, 1, 1);
-            handHitAirCollider.transform.localScale = new Vector3(Flip, 1, 1);
 
             if (Jumping)
             {
