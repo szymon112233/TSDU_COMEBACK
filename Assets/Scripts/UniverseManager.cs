@@ -37,22 +37,32 @@ public class UniverseManager : MonoBehaviour {
     public static System.Action<Vector2Int> EndOfTheMatch;
     public static System.Action MatchRestarted;
 
+
+    [Header("Ball")]
     public GameObject ballPrefab;
-    public Sprite[] ballColors;
+    
     public int currentBallColor;
+    public Transform ballSpawnPoint;
+    public Sprite[] ballColors;
+    public PointsCounter[] pointCounters;
+    public BallDetetor[] outOfFieldDtetectors;
+
+    [Header("Player")]
+
     public GameObject playerPrefab;
     public Cinemachine.CinemachineTargetGroup targetGroup;
     public Player[] players;
-    public PointsCounter[] pointCounters;
     public GameObject[] spawners;
-    public Transform ballSpawnPoint;
-    public GameObject currentBall;
+
+    [Header("Gameplay")]
 
     public int[] score;
     public int[] fouls;
     public float countDownDuration = 3;
     public float matchDuration = 180;
     public float matchTimer;
+
+    private GameObject currentBall;
     private MatchState currentState = MatchState.BEFORE;
 
     private uint lastPlayer = 0;
@@ -92,6 +102,7 @@ public class UniverseManager : MonoBehaviour {
 
         score = new int[players.Length];
         fouls = new int[players.Length];
+
         for (int i = 0; i < players.Length; i++)
         {
             int j = i;
@@ -100,7 +111,16 @@ public class UniverseManager : MonoBehaviour {
         for (int j = 0; j < pointCounters.Length; j++)
         {
             int i = j;
-            pointCounters[j].PointScored += () => { score[i]++; FireScoreChanged(); };
+            pointCounters[j].PointScored += () => {
+                score[i]++;
+                currentBall.GetComponent<BallCollisionDetector>().PickedUp = true;
+                StartCoroutine(DelayedActionCoroutine(1.5f, ResetPositons));
+                FireScoreChanged();
+            };
+        }
+        for (int i = 0; i < outOfFieldDtetectors.Length; i++)
+        {
+            outOfFieldDtetectors[i].balldetected += OnBallOutOfField;
         }
 
         ResetState();
@@ -141,6 +161,7 @@ public class UniverseManager : MonoBehaviour {
         if (ScoreChanged != null)
             ScoreChanged(new Vector2Int(score[0], score[1]));
     }
+
     private void FireFoulsChanged()
     {
         if (FoulsChanged != null)
@@ -190,6 +211,7 @@ public class UniverseManager : MonoBehaviour {
         if (currentState == MatchState.AFTER)
         {
             currentBall.GetComponent<BallCollisionDetector>().OnCollisionWithSurface += OnBallCollision;
+            currentBall.GetComponent<BallCollisionDetector>().OnCollisionWithOutOfField += OnBallOutOfFieldEndGame;
         }
             
     }
@@ -198,13 +220,38 @@ public class UniverseManager : MonoBehaviour {
     {
         currentBall.GetComponent<BallCollisionDetector>().OnCollisionWithSurface -= OnBallCollision;
         GameInput.instance.SetInputEnabled(false);
+        currentBall.GetComponent<BallCollisionDetector>().PickedUp = true;
         StartCoroutine(EndMatchCor());
-        
+    }
+
+    void OnBallOutOfFieldEndGame()
+    {
+        currentBall.GetComponent<BallCollisionDetector>().OnCollisionWithOutOfField -= OnBallOutOfFieldEndGame;
+        GameInput.instance.SetInputEnabled(false);
+        EndMatch();
+    }
+
+    void OnBallOutOfField()
+    {
+        if (currentState != MatchState.AFTER)
+            ResetPositons();
     }
 
     IEnumerator EndMatchCor()
     {
         yield return new WaitForSeconds(2);
+        EndMatch();
+    }
+
+    IEnumerator DelayedActionCoroutine(float timeDelay, System.Action action)
+    {
+        yield return new WaitForSeconds(timeDelay);
+        if (action != null)
+            action();
+    }
+
+    void EndMatch()
+    {
         if (EndOfTheMatch != null)
             EndOfTheMatch(new Vector2Int(score[0] - fouls[0], score[1] - fouls[1]));
         Debug.Log("End of the match!");
