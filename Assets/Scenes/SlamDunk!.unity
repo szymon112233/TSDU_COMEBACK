@@ -1459,7 +1459,7 @@ MonoBehaviour:
   score: 
   fouls: 
   countDownDuration: 3
-  matchDuration: 30
+  matchDuration: 180
   matchTimer: 0
 --- !u!114 &1733577711
 MonoBehaviour:

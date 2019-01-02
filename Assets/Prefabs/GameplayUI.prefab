@@ -603,7 +603,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Press any key to continue
+  m_Text: Press R to continue
 --- !u!114 &114376129632272948
 MonoBehaviour:
   m_ObjectHideFlags: 1
