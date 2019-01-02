@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 50e4d02c1c60f4a4abc5ba64da023b12
+guid: 44e5273bc4bd0934e86afe83cddc63fd
 TrueTypeFontImporter:
   externalObjects: {}
   serializedVersion: 4
@@ -8,15 +8,15 @@ TrueTypeFontImporter:
   characterSpacing: 0
   characterPadding: 1
   includeFontData: 1
-  fontName: VCR OSD Mono
+  fontName: BetterPixels
   fontNames:
-  - VCR OSD Mono
+  - BetterPixels
   fallbackFontReferences: []
   customCharacters: 
   fontRenderingMode: 2
   ascentCalculationMode: 1
   useLegacyBoundsCalculation: 0
-  shouldRoundAdvanceValue: 0
+  shouldRoundAdvanceValue: 1
   userData: 
   assetBundleName: 
   assetBundleVariant: 
