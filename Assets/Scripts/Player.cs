@@ -175,7 +175,8 @@ public class Player : MonoBehaviour {
         Vector2 moveVector = new Vector2();
         if (horizontal != 0 && !Hitting && !Throwing)
         {
-            Flip = horizontal > 0 ? 1 : -1;
+            if (!Jumping)
+                Flip = horizontal > 0 ? 1 : -1;
 
             if (Jumping)
             {
