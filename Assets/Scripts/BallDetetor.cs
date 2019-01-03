@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
 
 public class BallDetetor : MonoBehaviour {
 
@@ -13,7 +14,7 @@ public class BallDetetor : MonoBehaviour {
             collision.gameObject.GetComponent<BallCollisionDetector>().PickedUp = true;
             if (balldetected != null)
                 balldetected.Invoke();
-            Destroy(collision.gameObject);
+            PhotonNetwork.Destroy(collision.gameObject);
         }
         
     }

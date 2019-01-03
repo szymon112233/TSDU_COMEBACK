@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
+using Photon.Realtime;
 
 
 public enum MatchState
@@ -26,7 +28,7 @@ public class UniverseManager : MonoBehaviour {
 
         DontDestroyOnLoad(gameObject);
 
-        InitGame();
+        Init();
     }
 
     #endregion
@@ -36,7 +38,6 @@ public class UniverseManager : MonoBehaviour {
     public static System.Action<float> TimeChanged;
     public static System.Action<Vector2Int> EndOfTheMatch;
     public static System.Action MatchRestarted;
-
 
     [Header("Ball")]
     public GameObject ballPrefab;
@@ -60,7 +61,7 @@ public class UniverseManager : MonoBehaviour {
     public int[] fouls;
     public float countDownDuration = 3;
     public float matchDuration = 180;
-    public float matchTimer;
+    public float matchTimer = 60;
 
     private GameObject currentBall;
     private MatchState currentState = MatchState.BEFORE;
@@ -79,11 +80,17 @@ public class UniverseManager : MonoBehaviour {
             currentState = value; 
             if (value == MatchState.MATCH)
             {
-                currentBall.GetComponent<Rigidbody2D>().simulated = true;
+
+                //currentBall.GetComponent<Rigidbody2D>().simulated = true;
                 GameInput.instance.SetInputEnabled(true);
             }
                 
         }
+    }
+
+    void Init()
+    {
+        Com.szymon112233.TSDU.MultiplayerConnector.RoomJoined += InitGame;
     }
 
     void InitGame()
@@ -93,7 +100,7 @@ public class UniverseManager : MonoBehaviour {
 
         for (int i = 0; i < spawners.Length; i++)
         {
-            GameObject go = Instantiate(playerPrefab, spawners[i].transform.position, Quaternion.identity);
+            GameObject go = PhotonNetwork.Instantiate(playerPrefab.name, spawners[i].transform.position, Quaternion.identity, 0);
             players[i] = go.GetComponent<TSDUPlayer>();
             players[i].ballPosition.GetComponent<SpriteRenderer>().sprite = ballColors[currentBallColor];
             players[i].number = (uint)i;
@@ -150,7 +157,7 @@ public class UniverseManager : MonoBehaviour {
         FireScoreChanged();
         FireFoulsChanged();
         ResetPositons();
-        currentBall.GetComponent<Rigidbody2D>().simulated = false;
+        //currentBall.GetComponent<Rigidbody2D>().simulated = false;
         GameInput.instance.SetInputEnabled(false);
         if (MatchRestarted != null)
             MatchRestarted();
@@ -203,8 +210,8 @@ public class UniverseManager : MonoBehaviour {
     public void SpawnBall(Vector3 position, Vector2 initialForce = new Vector2(), float torque = 0.0f)
     {
         if (currentBall != null)
-            DestroyImmediate(currentBall);
-        currentBall = Instantiate(ballPrefab, position, Quaternion.identity);
+            PhotonNetwork.Destroy(currentBall);
+        currentBall = PhotonNetwork.Instantiate(ballPrefab.name, position, Quaternion.identity, 0);
         currentBall.GetComponent<Rigidbody2D>().AddForce(initialForce, ForceMode2D.Impulse);
         currentBall.GetComponent<Rigidbody2D>().AddTorque(torque, ForceMode2D.Impulse);
         currentBall.GetComponent<SpriteRenderer>().sprite = ballColors[currentBallColor];

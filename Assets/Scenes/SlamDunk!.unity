@@ -463,6 +463,11 @@ Prefab:
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 2037cf269a3a9c24bba1ccc1681c178c, type: 2}
   m_IsPrefabParent: 0
+--- !u!1 &885980191 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 1563803108672066, guid: e7a857f320fe8324bb110354e10aa926,
+    type: 2}
+  m_PrefabInternal: {fileID: 1892541190}
 --- !u!1001 &941979706
 Prefab:
   m_ObjectHideFlags: 0
@@ -1402,6 +1407,7 @@ GameObject:
   - component: {fileID: 1733577709}
   - component: {fileID: 1733577710}
   - component: {fileID: 1733577711}
+  - component: {fileID: 1733577712}
   m_Layer: 0
   m_Name: UniverseManager
   m_TagString: Untagged
@@ -1452,7 +1458,9 @@ MonoBehaviour:
     type: 2}
   targetGroup: {fileID: 1532534623}
   players: []
-  spawners: []
+  spawners:
+  - {fileID: 2122582733}
+  - {fileID: 885980191}
   score: 
   fouls: 
   countDownDuration: 3
@@ -1470,6 +1478,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   players: []
+--- !u!114 &1733577712
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1733577708}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb6cf2416502a4145a4b032d1f1dc2bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &1840517418 stripped
 MonoBehaviour:
   m_PrefabParentObject: {fileID: 114552504490895242, guid: 2037cf269a3a9c24bba1ccc1681c178c,
@@ -1573,6 +1592,11 @@ Prefab:
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: e7a857f320fe8324bb110354e10aa926, type: 2}
   m_IsPrefabParent: 0
+--- !u!1 &2122582733 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 1563803108672066, guid: e7a857f320fe8324bb110354e10aa926,
+    type: 2}
+  m_PrefabInternal: {fileID: 2052125424}
 --- !u!4 &2135767379 stripped
 Transform:
   m_PrefabParentObject: {fileID: 4148020842707148, guid: 2037cf269a3a9c24bba1ccc1681c178c,

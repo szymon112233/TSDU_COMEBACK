@@ -1,8 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Photon.Pun;
 using UnityEngine;
 
-public class TSDUPlayer : MonoBehaviour {
+public class TSDUPlayer : MonoBehaviourPunCallbacks, IPunObservable {
 
     public System.Action BallThrown;
 
@@ -129,7 +130,9 @@ public class TSDUPlayer : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        UpdateAction();
+
+        if (photonView.IsMine)
+            UpdateAction();
     }
 
     public void ResetState()
@@ -166,7 +169,8 @@ public class TSDUPlayer : MonoBehaviour {
 
     private void FixedUpdate()
     {
-        UpdateMovement();
+        if (photonView.IsMine)
+            UpdateMovement();
     }
 
     private void UpdateMovement()
@@ -325,5 +329,10 @@ public class TSDUPlayer : MonoBehaviour {
             Jumping = false;
             jumpFrames = 0;
         }
+    }
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        //throw new System.NotImplementedException();
     }
 }
