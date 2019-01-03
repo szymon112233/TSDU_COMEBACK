@@ -51,7 +51,7 @@ public class UniverseManager : MonoBehaviour {
 
     public GameObject playerPrefab;
     public Cinemachine.CinemachineTargetGroup targetGroup;
-    public Player[] players;
+    public TSDUPlayer[] players;
     public GameObject[] spawners;
 
     [Header("Gameplay")]
@@ -89,12 +89,12 @@ public class UniverseManager : MonoBehaviour {
     void InitGame()
     {
         spawners = GameObject.FindGameObjectsWithTag("SpawnPoint");
-        players = new Player[spawners.Length];
+        players = new TSDUPlayer[spawners.Length];
 
         for (int i = 0; i < spawners.Length; i++)
         {
             GameObject go = Instantiate(playerPrefab, spawners[i].transform.position, Quaternion.identity);
-            players[i] = go.GetComponent<Player>();
+            players[i] = go.GetComponent<TSDUPlayer>();
             players[i].ballPosition.GetComponent<SpriteRenderer>().sprite = ballColors[currentBallColor];
             players[i].number = (uint)i;
             targetGroup.AddMember(go.transform, 1, 50.0f);

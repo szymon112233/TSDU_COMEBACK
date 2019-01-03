@@ -6,7 +6,7 @@ public class HandHitDetector : MonoBehaviour {
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        Player player = collision.gameObject.GetComponent<Player>();
+        TSDUPlayer player = collision.gameObject.GetComponent<TSDUPlayer>();
         if (player != null)
         {
             player.GetHit(Mathf.RoundToInt(gameObject.transform.localScale.x));
