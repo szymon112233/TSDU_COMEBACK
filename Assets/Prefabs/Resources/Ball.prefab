@@ -24,7 +24,7 @@ GameObject:
   - component: {fileID: 50357676635464914}
   - component: {fileID: 114381794940339946}
   - component: {fileID: 114099316518680414}
-  - component: {fileID: 114997749991838694}
+  - component: {fileID: 114581255645132076}
   m_Layer: 8
   m_Name: Ball
   m_TagString: Untagged
@@ -97,7 +97,7 @@ MonoBehaviour:
   Synchronization: 3
   OwnershipTransfer: 1
   ObservedComponents:
-  - {fileID: 114997749991838694}
+  - {fileID: 114581255645132076}
   viewIdField: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -113,7 +113,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PickedUp: 0
---- !u!114 &114997749991838694
+--- !u!114 &114581255645132076
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -121,13 +121,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1414170368522762}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0e7cb724808c322458aa4d15f5035fa9, type: 3}
+  m_Script: {fileID: 11500000, guid: c035cfd4e6c4e3448be9e8677a76f63f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_SynchronizeVelocity: 1
-  m_SynchronizeAngularVelocity: 1
-  m_TeleportEnabled: 1
-  m_TeleportIfDistanceGreaterThan: 5
+  UpdatePosAndRotRate: 5
 --- !u!212 &212290119240685648
 SpriteRenderer:
   m_ObjectHideFlags: 1
