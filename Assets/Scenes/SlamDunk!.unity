@@ -1078,16 +1078,16 @@ Prefab:
       propertyPath: m_RootOrder
       value: 3
       objectReference: {fileID: 0}
-    - target: {fileID: 114055116087909878, guid: 9847fa922f180b64f861ec7f95526bae,
-        type: 2}
-      propertyPath: m_Follow
-      value: 
-      objectReference: {fileID: 1532534624}
     - target: {fileID: 114893223640949338, guid: 9847fa922f180b64f861ec7f95526bae,
         type: 2}
       propertyPath: m_BoundingShape2D
       value: 
       objectReference: {fileID: 1696393828}
+    - target: {fileID: 114055116087909878, guid: 9847fa922f180b64f861ec7f95526bae,
+        type: 2}
+      propertyPath: m_Follow
+      value: 
+      objectReference: {fileID: 1532534624}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 9847fa922f180b64f861ec7f95526bae, type: 2}
   m_IsPrefabParent: 0
@@ -1447,10 +1447,14 @@ MonoBehaviour:
   pointCounters:
   - {fileID: 1122959805}
   - {fileID: 1840517418}
-  outOfFieldDtetectors: []
+  outOfFieldDtetectors:
+  - {fileID: 1130193686}
+  - {fileID: 744035548}
+  - {fileID: 341781638}
   playerPrefab: {fileID: 1818661215439096, guid: 68e34bc27ed581c4d8d90d63b311c16e,
     type: 2}
   targetGroup: {fileID: 1532534623}
+  CameraFollowRadius: 300
   players: []
   spawners: []
   score: 

@@ -20,4 +20,9 @@ public class BallCollisionDetector : MonoBehaviour {
             if (OnCollisionWithOutOfField != null)
                 OnCollisionWithOutOfField.Invoke();
     }
+
+    private void OnDestroy()
+    {
+        UniverseManager.instance.targetGroup.RemoveMember(gameObject.transform);
+    }
 }

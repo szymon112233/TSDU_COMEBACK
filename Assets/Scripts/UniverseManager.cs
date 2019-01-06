@@ -51,6 +51,7 @@ public class UniverseManager : MonoBehaviour {
 
     public GameObject playerPrefab;
     public Cinemachine.CinemachineTargetGroup targetGroup;
+    public float CameraFollowRadius = 300.0f;
     public TSDUPlayer[] players;
     public GameObject[] spawners;
 
@@ -97,7 +98,7 @@ public class UniverseManager : MonoBehaviour {
             players[i] = go.GetComponent<TSDUPlayer>();
             players[i].ballPosition.GetComponent<SpriteRenderer>().sprite = ballColors[currentBallColor];
             players[i].number = (uint)i;
-            targetGroup.AddMember(go.transform, 1, 50.0f);
+            targetGroup.AddMember(go.transform, 1, CameraFollowRadius);
         }
 
         score = new int[players.Length];
@@ -203,7 +204,7 @@ public class UniverseManager : MonoBehaviour {
     public void SpawnBall(Vector3 position, Vector2 initialForce = new Vector2(), float torque = 0.0f)
     {
         if (currentBall != null)
-            DestroyImmediate(currentBall);
+            Destroy(currentBall);
         currentBall = Instantiate(ballPrefab, position, Quaternion.identity);
         currentBall.GetComponent<Rigidbody2D>().AddForce(initialForce, ForceMode2D.Impulse);
         currentBall.GetComponent<Rigidbody2D>().AddTorque(torque, ForceMode2D.Impulse);
@@ -213,7 +214,7 @@ public class UniverseManager : MonoBehaviour {
             currentBall.GetComponent<BallCollisionDetector>().OnCollisionWithSurface += OnBallCollision;
             currentBall.GetComponent<BallCollisionDetector>().OnCollisionWithOutOfField += OnBallOutOfFieldEndGame;
         }
-            
+        targetGroup.AddMember(currentBall.transform, 1, CameraFollowRadius);
     }
 
     void OnBallCollision()
