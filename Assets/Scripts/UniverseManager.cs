@@ -119,7 +119,7 @@ public class UniverseManager : MonoBehaviour, IOnEventCallback
         GameObject go = PhotonNetwork.Instantiate(playerPrefab.name, spawners[PhotonNetwork.LocalPlayer.ActorNumber-1].transform.position, Quaternion.identity, 0);
         controlledPlayer = go.GetComponent<TSDUPlayer>();
         controlledPlayer.ballPosition.GetComponent<SpriteRenderer>().sprite = ballColors[currentMatchSetup.BallColorIndex];
-        controlledPlayer.number = (uint)PhotonNetwork.LocalPlayer.ActorNumber -1;
+        controlledPlayer.networkNumber = (uint)PhotonNetwork.LocalPlayer.ActorNumber -1;
         targetGroup.AddMember(go.transform, 1, 50.0f);
 
         score = new int[currentMatchSetup.PlayerCount];
@@ -220,17 +220,7 @@ public class UniverseManager : MonoBehaviour, IOnEventCallback
 
     public void SpawnBall(Vector3 position, Vector2 initialForce = new Vector2(), float torque = 0.0f)
     {
-        if (currentBall == null)
-            currentBall = PhotonNetwork.Instantiate(ballPrefab.name, position, Quaternion.identity, 0);
-        else
-        {
-            currentBall.SetActive(true);
-            currentBall.GetComponent<Rigidbody2D>().position = new Vector2(position.x, position.y);
-            currentBall.GetComponent<Rigidbody2D>().rotation = 0.0f;
-            currentBall.GetComponent<Rigidbody2D>().velocity = new Vector2();
-            currentBall.GetComponent<Rigidbody2D>().angularVelocity = 0.0f;
-            currentBall.GetComponent<BallCollisionDetector>().PickedUp = false;
-        }
+        currentBall = PhotonNetwork.Instantiate(ballPrefab.name, position, Quaternion.identity, 0);
         currentBall.GetComponent<Rigidbody2D>().AddForce(initialForce, ForceMode2D.Impulse);
         currentBall.GetComponent<Rigidbody2D>().AddTorque(torque, ForceMode2D.Impulse);
         currentBall.GetComponent<SpriteRenderer>().sprite = ballColors[currentBallColor];

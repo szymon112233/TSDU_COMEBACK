@@ -573,6 +573,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 08e4ced978d49704491acf55c054ef30, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  myPLayer: {fileID: 114993528546821120}
 --- !u!114 &114600732376201390
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -659,7 +660,8 @@ MonoBehaviour:
   ballPosition: {fileID: 1854674518523520}
   m_photonView: {fileID: 114609037228265054}
   powerBar: {fileID: 114058585284090250}
-  number: 0
+  networkNumber: 0
+  localNumber: 0
   movementSpeed: 300
   jumpForce: 200
   jumpMomentum: -290

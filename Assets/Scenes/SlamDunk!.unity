@@ -1457,6 +1457,7 @@ GameObject:
   - component: {fileID: 1733577710}
   - component: {fileID: 1733577711}
   - component: {fileID: 1733577712}
+  - component: {fileID: 1733577713}
   m_Layer: 0
   m_Name: UniverseManager
   m_TagString: Untagged
@@ -1545,6 +1546,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb6cf2416502a4145a4b032d1f1dc2bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  prefabPool: {fileID: 1733577713}
+--- !u!114 &1733577713
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1733577708}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ba18bdc5b912834e989886a6273654a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  networkPrefabs:
+  - {fileID: 1414170368522762, guid: bf90924adc6974f42b68bce5a50f9252, type: 2}
+  - {fileID: 1818661215439096, guid: 68e34bc27ed581c4d8d90d63b311c16e, type: 2}
+  currentBall: {fileID: 0}
 --- !u!114 &1840517418 stripped
 MonoBehaviour:
   m_PrefabParentObject: {fileID: 114552504490895242, guid: 2037cf269a3a9c24bba1ccc1681c178c,

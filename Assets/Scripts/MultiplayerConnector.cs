@@ -16,6 +16,8 @@ public struct MatchSetup
 
 public class MultiplayerConnector : MonoBehaviourPunCallbacks
 {
+    public PrefabsNetworkPool prefabPool;
+
     public static System.Action RoomJoined;
     public static System.Action RoomCreated;
     public static System.Action<int> PlayerEnteredRoom;
@@ -52,6 +54,7 @@ public class MultiplayerConnector : MonoBehaviourPunCallbacks
         // #Critical
         // this makes sure we can use PhotonNetwork.LoadLevel() on the master client and all clients in the same room sync their level automatically
         PhotonNetwork.AutomaticallySyncScene = true;
+        PhotonNetwork.PrefabPool = prefabPool;
     }
 
 

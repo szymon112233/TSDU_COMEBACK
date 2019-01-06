@@ -23,7 +23,8 @@ public class TSDUPlayer : MonoBehaviourPunCallbacks, IPunObservable {
     public UnityEngine.UI.Image powerBar;
 
     [Header("Data")]
-    public uint number = 0;
+    public uint networkNumber = 0;
+    public uint localNumber = 0;
 
     [Header("Movement")]
     public float movementSpeed = 10.0f;
@@ -186,7 +187,7 @@ public class TSDUPlayer : MonoBehaviourPunCallbacks, IPunObservable {
 
     private void UpdateMovement()
     {
-        float horizontal = GameInput.instance.GetAxis(GameAxis.X_MOVEMENT, (int)number);
+        float horizontal = GameInput.instance.GetAxis(GameAxis.X_MOVEMENT, (int)localNumber);
         Vector2 moveVector = new Vector2();
         if (horizontal != 0 && !Hitting && !Throwing)
         {
@@ -211,7 +212,7 @@ public class TSDUPlayer : MonoBehaviourPunCallbacks, IPunObservable {
         if (Jumping)
         {
             moveVector.y = jumpMomentum * Time.deltaTime;
-            if(GameInput.instance.GetButton(GameButtons.JUMP, (int)number) && jumpFrames < maxJumpTimeFrames)
+            if(GameInput.instance.GetButton(GameButtons.JUMP, (int)localNumber) && jumpFrames < maxJumpTimeFrames)
             {
                 jumpFrames++;
             }
@@ -222,7 +223,7 @@ public class TSDUPlayer : MonoBehaviourPunCallbacks, IPunObservable {
 
             
         }
-        if (!Jumping && GameInput.instance.GetButton(GameButtons.JUMP, (int)number))
+        if (!Jumping && GameInput.instance.GetButton(GameButtons.JUMP, (int)localNumber))
         {
             Jumping = true;
             jumpFrames++;
@@ -252,14 +253,14 @@ public class TSDUPlayer : MonoBehaviourPunCallbacks, IPunObservable {
     {
         if (HasBall)
         {
-            if (GameInput.instance.GetButtonPressed(GameButtons.ACTION, (int)number))
+            if (GameInput.instance.GetButtonPressed(GameButtons.ACTION, (int)localNumber))
             {
                 powerBar.fillAmount = 0;
                 powerBar.gameObject.SetActive(true);
                 animator.ResetTrigger("BallThrown");
                 Throwing = true;
             }
-            else if (GameInput.instance.GetButton(GameButtons.ACTION, (int)number))
+            else if (GameInput.instance.GetButton(GameButtons.ACTION, (int)localNumber))
             {
                 throwForce.x = throwForceCurveX.Evaluate(lerpTimer / lerpTime * 100.0f);
                 throwForce.y = throwForceCurveY.Evaluate(lerpTimer / lerpTime * 100.0f);
@@ -279,7 +280,7 @@ public class TSDUPlayer : MonoBehaviourPunCallbacks, IPunObservable {
                 }
 
             }
-            else if (GameInput.instance.GetButtonReleased(GameButtons.ACTION, (int)number))
+            else if (GameInput.instance.GetButtonReleased(GameButtons.ACTION, (int)localNumber))
             {
                 powerBar.gameObject.SetActive(false);
                 Throwing = false;
@@ -288,7 +289,7 @@ public class TSDUPlayer : MonoBehaviourPunCallbacks, IPunObservable {
         }
         else
         {
-            if (GameInput.instance.GetButtonPressed(GameButtons.ACTION, (int)number) && !Hitting)
+            if (GameInput.instance.GetButtonPressed(GameButtons.ACTION, (int)localNumber) && !Hitting)
             {
                 if (Jumping)
                 {
@@ -363,7 +364,7 @@ public class TSDUPlayer : MonoBehaviourPunCallbacks, IPunObservable {
             stream.SendNext(rigibdoy.position);
             stream.SendNext(Flip);
 
-            stream.SendNext(GameInput.instance.GetAxis(GameAxis.X_MOVEMENT, (int)number));
+            stream.SendNext(GameInput.instance.GetAxis(GameAxis.X_MOVEMENT, (int)localNumber));
         }
         else
         {
