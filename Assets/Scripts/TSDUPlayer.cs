@@ -45,6 +45,7 @@ public class TSDUPlayer : MonoBehaviour {
     private bool throwing = false;
     private bool lerpDir = true;
     private bool hasBall = false;
+    private bool jumpedWithBall;
 
     private bool hitting = false;
 
@@ -91,6 +92,9 @@ public class TSDUPlayer : MonoBehaviour {
         {
             jumping = value;
             animator.SetBool("IsJumping", value);
+
+            if (jumping && HasBall)
+                jumpedWithBall = true;
         }
     }
 
@@ -291,6 +295,7 @@ public class TSDUPlayer : MonoBehaviour {
         animator.SetTrigger("BallThrown");
         if (BallThrown != null)
             BallThrown();
+        jumpedWithBall = false;
     }
 
     void DisableBallDetector()
@@ -322,6 +327,11 @@ public class TSDUPlayer : MonoBehaviour {
         Debug.LogFormat("Collision: {0}", collision.gameObject.name);
         if (collision.gameObject.CompareTag("Ground"))
         {
+            if (hasBall && jumpedWithBall)
+            {
+                UniverseManager.instance.fouls[number]++;
+                UniverseManager.instance.FireFoulsChanged();
+            }
             Jumping = false;
             jumpFrames = 0;
         }

@@ -178,7 +178,7 @@ public class UniverseManager : MonoBehaviour {
             ScoreChanged(new Vector2Int(score[0], score[1]));
     }
 
-    private void FireFoulsChanged()
+    public void FireFoulsChanged()
     {
         if (FoulsChanged != null)
             FoulsChanged(new Vector2Int(fouls[0], fouls[1]));

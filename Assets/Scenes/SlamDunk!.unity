@@ -1457,7 +1457,7 @@ MonoBehaviour:
   CameraFollowRadius: 300
   players: []
   spawners: []
-  presetsForPlayers: 00000000030000000100000000000000
+  presetsForPlayers: 04000000010000000100000000000000
   presets:
   - Shirt: {r: 0, g: 0.12056247, b: 0.8867924, a: 0}
     Pants: {r: 0, g: 0.12156863, b: 0.8901961, a: 0}
@@ -1475,6 +1475,10 @@ MonoBehaviour:
     Pants: {r: 0, g: 0, b: 0, a: 0}
     Acessories: {r: 0.8773585, g: 0, b: 0, a: 0}
     Skin: {r: 0.9150943, g: 0.94509804, b: 0.36862746, a: 1}
+  - Shirt: {r: 0, g: 0.3207547, b: 0.03335699, a: 1}
+    Pants: {r: 0, g: 0.32156864, b: 0.03529412, a: 0}
+    Acessories: {r: 1, g: 1, b: 1, a: 0}
+    Skin: {r: 0.5471698, g: 0.37166646, b: 0.14195444, a: 1}
   score: 
   fouls: 
   countDownDuration: 3
