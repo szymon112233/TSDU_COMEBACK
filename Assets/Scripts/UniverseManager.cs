@@ -10,6 +10,15 @@ public enum MatchState
     AFTER
 }
 
+[System.Serializable]
+public struct PlayerColors
+{
+    public Color Shirt;
+    public Color Pants;
+    public Color Acessories;
+    public Color Skin;
+}
+
 public class UniverseManager : MonoBehaviour {
 
     #region singleton
@@ -54,6 +63,8 @@ public class UniverseManager : MonoBehaviour {
     public float CameraFollowRadius = 300.0f;
     public TSDUPlayer[] players;
     public GameObject[] spawners;
+    public int[] presetsForPlayers;
+    public PlayerColors[] presets; 
 
     [Header("Gameplay")]
 
@@ -98,6 +109,10 @@ public class UniverseManager : MonoBehaviour {
             players[i] = go.GetComponent<TSDUPlayer>();
             players[i].ballPosition.GetComponent<SpriteRenderer>().sprite = ballColors[currentBallColor];
             players[i].number = (uint)i;
+            players[i].sprite.material.SetColor("_TshirtColor",presets[presetsForPlayers[i]].Shirt);
+            players[i].sprite.material.SetColor("_PantsColor", presets[presetsForPlayers[i]].Pants);
+            players[i].sprite.material.SetColor("_ShoesColor", presets[presetsForPlayers[i]].Acessories);
+            players[i].sprite.material.SetColor("_SkinColor",presets[presetsForPlayers[i]].Skin);
             targetGroup.AddMember(go.transform, 1, CameraFollowRadius);
         }
 
