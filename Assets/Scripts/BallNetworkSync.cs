@@ -1,16 +1,15 @@
-﻿
-
-
-using UnityEngine;
+﻿using UnityEngine;
 using Photon.Pun;
 
 
 [RequireComponent(typeof(PhotonView))]
 [RequireComponent(typeof(Rigidbody2D))]
-public class BallNetworkSync : MonoBehaviour, IPunObservable
+public class BallNetworkSync : MonoBehaviour, IPunObservable, IPunInstantiateMagicCallback
 {
+    public static System.Action<GameObject> BallCreated;
 
     public int UpdatePosAndRotRate = 8;
+    public float minTeleportDistance = 100.0f;
     private int updatesLeft = 0;
     private bool shouldupdate = true;
 
@@ -33,14 +32,24 @@ public class BallNetworkSync : MonoBehaviour, IPunObservable
 
     public void FixedUpdate()
     {
-        if (!this.m_PhotonView.IsMine && shouldupdate)
+        if (updatesLeft > 0)
+            updatesLeft--;
+        else
         {
-            //this.m_Body.position = this.m_NetworkPosition;
-            this.m_Body.rotation = this.m_NetworkRotation;
-            this.m_Body.position = Vector2.Lerp(this.m_Body.position, this.m_NetworkPosition, Time.deltaTime * UpdatePosAndRotRate);
-            //this.m_Body.rotation = Mathf.MoveTowards(this.m_Body.rotation, this.m_NetworkRotation, 1.0f);
-            shouldupdate = false;
+            shouldupdate = true;
+            updatesLeft = UpdatePosAndRotRate;
+
+            if (!this.m_PhotonView.IsMine && shouldupdate)
+            {
+                this.m_Body.rotation = this.m_NetworkRotation;
+
+                m_Body.position = Vector2.Lerp(m_Body.position, m_NetworkPosition, 0.1f);
+                shouldupdate = false;
+            }
         }
+
+        
+       
     }
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
@@ -55,25 +64,24 @@ public class BallNetworkSync : MonoBehaviour, IPunObservable
         }
         else
         {
-            if (updatesLeft > 0)
-                updatesLeft--;
-            else
-            {
-                shouldupdate = true;
-                updatesLeft = UpdatePosAndRotRate;
-                this.m_NetworkPosition = (Vector2)stream.ReceiveNext();
-                this.m_NetworkRotation = (float)stream.ReceiveNext();
+            this.m_NetworkPosition = (Vector2)stream.ReceiveNext();
+            this.m_NetworkRotation = (float)stream.ReceiveNext();
 
-                float lag = Mathf.Abs((float)(PhotonNetwork.Time - info.timestamp));
+            float lag = Mathf.Abs((float)(PhotonNetwork.Time - info.timestamp));
 
-                this.m_Body.velocity = (Vector2)stream.ReceiveNext();
-                this.m_NetworkPosition += this.m_Body.velocity * lag;
+            this.m_Body.velocity = (Vector2)stream.ReceiveNext();
+            this.m_NetworkPosition += this.m_Body.velocity * lag;
 
-                this.m_Body.angularVelocity = (float)stream.ReceiveNext();
-                this.m_NetworkRotation += this.m_Body.angularVelocity * lag;
-            }
+            this.m_Body.angularVelocity = (float)stream.ReceiveNext();
+            this.m_NetworkRotation += this.m_Body.angularVelocity * lag;
         }
 
             
+    }
+
+    void IPunInstantiateMagicCallback.OnPhotonInstantiate(PhotonMessageInfo info)
+    {
+        if (BallCreated != null)
+            BallCreated(gameObject);
     }
 }

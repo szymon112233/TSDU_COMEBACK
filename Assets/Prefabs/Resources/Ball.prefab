@@ -125,6 +125,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   UpdatePosAndRotRate: 5
+  minTeleportDistance: 100
 --- !u!212 &212290119240685648
 SpriteRenderer:
   m_ObjectHideFlags: 1

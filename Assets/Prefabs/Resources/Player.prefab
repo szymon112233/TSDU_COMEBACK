@@ -108,7 +108,6 @@ GameObject:
   - component: {fileID: 50386016976192442}
   - component: {fileID: 61468606145283118}
   - component: {fileID: 114609037228265054}
-  - component: {fileID: 114665015813288394}
   m_Layer: 9
   m_Name: Player
   m_TagString: Untagged
@@ -614,24 +613,9 @@ MonoBehaviour:
   ObservedComponents:
   - {fileID: 114993528546821120}
   - {fileID: 114156318827657572}
-  - {fileID: 114665015813288394}
   viewIdField: 0
   InstantiationId: 1
   isRuntimeInstantiated: 0
---- !u!114 &114665015813288394
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1818661215439096}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SynchronizePosition: 1
-  m_SynchronizeRotation: 0
-  m_SynchronizeScale: 1
 --- !u!114 &114973362333791606
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -673,6 +657,7 @@ MonoBehaviour:
   handHitAirCollider: {fileID: 1905358034132128}
   animator: {fileID: 95802339385897412}
   ballPosition: {fileID: 1854674518523520}
+  m_photonView: {fileID: 114609037228265054}
   powerBar: {fileID: 114058585284090250}
   number: 0
   movementSpeed: 300
@@ -743,7 +728,7 @@ MonoBehaviour:
       outWeight: 0
     - serializedVersion: 3
       time: 100
-      value: 300
+      value: 500
       inSlope: 35.336838
       outSlope: 35.336838
       tangentMode: 0
@@ -754,6 +739,8 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   lerpTime: 0.5
+  networkHorizontal: 0
+  UpdatePosAndRotRate: 8
 --- !u!212 &212580860218084626
 SpriteRenderer:
   m_ObjectHideFlags: 1

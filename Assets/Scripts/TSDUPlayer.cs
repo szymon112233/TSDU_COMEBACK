@@ -19,6 +19,7 @@ public class TSDUPlayer : MonoBehaviourPunCallbacks, IPunObservable {
     public GameObject handHitAirCollider;
     public Animator animator;
     public GameObject ballPosition;
+    public PhotonView m_photonView;
     public UnityEngine.UI.Image powerBar;
 
     [Header("Data")]
@@ -48,6 +49,14 @@ public class TSDUPlayer : MonoBehaviourPunCallbacks, IPunObservable {
     private bool hasBall = false;
 
     private bool hitting = false;
+
+    [Header("Network")]
+    public float networkHorizontal;
+    private float networkScaleX;
+    private Vector2 networkPosition;
+    public int UpdatePosAndRotRate = 8;
+    private int updatesLeft = 0;
+    private bool shouldupdate = true;
 
     private IEnumerator EnableBallPickupCoroutineREF;
     private IEnumerator DisableHitStateCoroutineREF;
@@ -169,8 +178,10 @@ public class TSDUPlayer : MonoBehaviourPunCallbacks, IPunObservable {
 
     private void FixedUpdate()
     {
-        if (photonView.IsMine)
+        if (m_photonView.IsMine)
             UpdateMovement();
+        else
+            UpdateMovementNetwork();
     }
 
     private void UpdateMovement()
@@ -216,10 +227,24 @@ public class TSDUPlayer : MonoBehaviourPunCallbacks, IPunObservable {
             Jumping = true;
             jumpFrames++;
             jumpMomentum = jumpForce;
-            //Vector2 forceVector = new Vector2(0.0f, jumpForce);
-            //rigibdoy.AddForce(forceVector);
         }
         rigibdoy.MovePosition(rigibdoy.position + moveVector);
+
+    }
+
+    private void UpdateMovementNetwork()
+    {
+        Vector2 moveVector = new Vector2();
+        moveVector.x = networkHorizontal * movementSpeed * Time.deltaTime;
+
+        rigibdoy.MovePosition(rigibdoy.position + moveVector);
+
+        if (shouldupdate)
+        {
+            shouldupdate = false;
+            
+        }
+        this.rigibdoy.position = Vector3.Lerp(rigibdoy.position, networkPosition, 0.1f);
 
     }
 
@@ -333,6 +358,27 @@ public class TSDUPlayer : MonoBehaviourPunCallbacks, IPunObservable {
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
-        //throw new System.NotImplementedException();
+        if (stream.IsWriting)
+        {
+            stream.SendNext(rigibdoy.position);
+            stream.SendNext(Flip);
+
+            stream.SendNext(GameInput.instance.GetAxis(GameAxis.X_MOVEMENT, (int)number));
+        }
+        else
+        {
+            if (updatesLeft > 0)
+                updatesLeft--;
+            else
+            {
+                shouldupdate = true;
+                updatesLeft = UpdatePosAndRotRate;
+
+            }
+
+            networkPosition = (Vector2)stream.ReceiveNext();
+            transform.localScale = new Vector3((int)stream.ReceiveNext(), transform.localScale.y, transform.localScale.z);
+            networkHorizontal = (float)stream.ReceiveNext();
+        }
     }
 }
