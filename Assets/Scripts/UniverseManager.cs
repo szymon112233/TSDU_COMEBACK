@@ -49,11 +49,12 @@ public class UniverseManager : MonoBehaviour, IOnEventCallback
     public PointsCounter[] pointCounters;
     public BallDetetor[] outOfFieldDtetectors;
 
-    [Header("Player")]
+    [Header("Players")]
 
     public GameObject playerPrefab;
     public Cinemachine.CinemachineTargetGroup targetGroup;
     public TSDUPlayer controlledPlayer;
+    public Dictionary<int, TSDUPlayer> allNetworkPlayers;
     public GameObject[] spawners;
 
     [Header("Gameplay")]
@@ -101,6 +102,7 @@ public class UniverseManager : MonoBehaviour, IOnEventCallback
 
     void Init()
     {
+        allNetworkPlayers = new Dictionary<int, TSDUPlayer>();
         currentMatchSetup = new MatchSetup() {
             BallColorIndex = currentBallColor,
             CountDownTime = countDownDuration,
@@ -236,6 +238,16 @@ public class UniverseManager : MonoBehaviour, IOnEventCallback
 
     }
 
+    public void HitPlayer(int networkPlayerID, int direction)
+    {
+        Debug.LogFormat("Sent HitPlayer with values: networkPlayerID = {0}, direction = {1}", networkPlayerID, direction);
+        byte evCode = MultiplayerConnector.PlayerHitPhotonEvent; 
+        object[] content = new object[] { networkPlayerID, direction };
+        RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.Others };
+        SendOptions sendOptions = new SendOptions { Reliability = true };
+        PhotonNetwork.RaiseEvent(evCode, content, raiseEventOptions, sendOptions);
+    }
+
     void OnBallCollision()
     {
         currentBall.GetComponent<BallCollisionDetector>().OnCollisionWithSurface -= OnBallCollision;
@@ -306,9 +318,19 @@ public class UniverseManager : MonoBehaviour, IOnEventCallback
 
         }
 
-        else if(eventCode == 5)
+        else if(eventCode == MultiplayerConnector.PlayerHitPhotonEvent)
         {
-            currentBall.SetActive(true);
+            object[] recievedData = (object[])photonEvent.CustomData;
+            int playerNetworkID = (int)recievedData[0];
+            if (allNetworkPlayers.ContainsKey(playerNetworkID))
+            {
+                Debug.LogFormat("Recieved HitPlayer with values: networkPlayerID = {0}, direction = {1}", playerNetworkID, (int)recievedData[1]);
+                allNetworkPlayers[playerNetworkID].GetHit((int)recievedData[1]);
+            }
+            else
+            {
+                Debug.LogErrorFormat("Couldn't find other player with networkID: {0}", playerNetworkID);
+            }
         }
     }
 

@@ -53,7 +53,6 @@ public class TSDUPlayer : MonoBehaviourPunCallbacks, IPunObservable {
 
     [Header("Network")]
     public float networkHorizontal;
-    private float networkScaleX;
     private Vector2 networkPosition;
     public int UpdatePosAndRotRate = 8;
     private int updatesLeft = 0;
@@ -133,15 +132,13 @@ public class TSDUPlayer : MonoBehaviourPunCallbacks, IPunObservable {
         }
     }
 
-    private void Awake()
-    {
-        
-    }
-
     // Use this for initialization
     void Start () {
         Debug.LogFormat("my photonView.OwnerActorNr = {0}", photonView.OwnerActorNr);
         networkNumber = (uint)photonView.OwnerActorNr - 1;
+
+        UniverseManager.instance.allNetworkPlayers.Add(photonView.OwnerActorNr, this);
+
         ballDetector.GetComponent<BallDetetor>().balldetected += () => { HasBall = true; };
 	}
 	

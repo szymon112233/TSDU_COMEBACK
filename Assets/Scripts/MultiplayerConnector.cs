@@ -23,7 +23,7 @@ public class MultiplayerConnector : MonoBehaviourPunCallbacks
     public static System.Action<int> PlayerEnteredRoom;
 
     public static readonly byte SendMatchSetupPhotonEvent = 0;
-    public static readonly byte InnyEvent = 1;
+    public static readonly byte PlayerHitPhotonEvent = 1;
 
     #region Private Serializable Fields
 
