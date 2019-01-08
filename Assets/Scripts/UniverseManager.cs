@@ -119,7 +119,6 @@ public class UniverseManager : MonoBehaviour, IOnEventCallback
         GameObject go = PhotonNetwork.Instantiate(playerPrefab.name, spawners[PhotonNetwork.LocalPlayer.ActorNumber-1].transform.position, Quaternion.identity, 0);
         controlledPlayer = go.GetComponent<TSDUPlayer>();
         controlledPlayer.ballPosition.GetComponent<SpriteRenderer>().sprite = ballColors[currentMatchSetup.BallColorIndex];
-        controlledPlayer.networkNumber = (uint)PhotonNetwork.LocalPlayer.ActorNumber -1;
         targetGroup.AddMember(go.transform, 1, 50.0f);
 
         score = new int[currentMatchSetup.PlayerCount];
@@ -332,6 +331,7 @@ public class UniverseManager : MonoBehaviour, IOnEventCallback
                 RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.Others };
                 SendOptions sendOptions = new SendOptions { Reliability = true };
                 PhotonNetwork.RaiseEvent(evCode, content, raiseEventOptions, sendOptions);
+                PhotonNetwork.CurrentRoom.IsOpen = false;
                 InitGame();
             } 
         }

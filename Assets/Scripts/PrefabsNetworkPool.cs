@@ -49,6 +49,7 @@ public class PrefabsNetworkPool : MonoBehaviour, Photon.Pun.IPunPrefabPool
                 }
                 else
                 {
+                    currentBall.transform.position = position;
                     currentBall.GetComponent<Rigidbody2D>().velocity = new Vector2();
                     currentBall.GetComponent<Rigidbody2D>().angularVelocity = 0.0f;
                     currentBall.GetComponent<BallCollisionDetector>().PickedUp = false;

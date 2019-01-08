@@ -253,6 +253,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 08e4ced978d49704491acf55c054ef30, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  myPLayer: {fileID: 0}
 --- !u!1001 &387396408
 Prefab:
   m_ObjectHideFlags: 0
@@ -560,6 +561,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 08e4ced978d49704491acf55c054ef30, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  myPLayer: {fileID: 0}
 --- !u!1001 &764791450
 Prefab:
   m_ObjectHideFlags: 0
@@ -967,6 +969,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 08e4ced978d49704491acf55c054ef30, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  myPLayer: {fileID: 0}
 --- !u!1 &1185464922
 GameObject:
   m_ObjectHideFlags: 0
@@ -1513,7 +1516,7 @@ MonoBehaviour:
   - {fileID: 885980191}
   score: 
   fouls: 
-  countDownDuration: 7
+  countDownDuration: 4
   matchDuration: 256
   matchTimer: 0
   currentMatchSetup:

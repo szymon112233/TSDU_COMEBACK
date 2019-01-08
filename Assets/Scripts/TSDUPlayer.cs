@@ -133,8 +133,15 @@ public class TSDUPlayer : MonoBehaviourPunCallbacks, IPunObservable {
         }
     }
 
+    private void Awake()
+    {
+        
+    }
+
     // Use this for initialization
     void Start () {
+        Debug.LogFormat("my photonView.OwnerActorNr = {0}", photonView.OwnerActorNr);
+        networkNumber = (uint)photonView.OwnerActorNr - 1;
         ballDetector.GetComponent<BallDetetor>().balldetected += () => { HasBall = true; };
 	}
 	
@@ -334,7 +341,7 @@ public class TSDUPlayer : MonoBehaviourPunCallbacks, IPunObservable {
 
     IEnumerator EnableBallPickupCoroutine()
     {
-        yield return new WaitForSeconds(0.25f);
+        yield return new WaitForSeconds(0.5f);
         ballDetector.SetActive(true);
     }
 
