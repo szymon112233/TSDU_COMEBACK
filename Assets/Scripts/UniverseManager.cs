@@ -56,6 +56,7 @@ public class UniverseManager : MonoBehaviour, IOnEventCallback
     public TSDUPlayer controlledPlayer;
     public Dictionary<int, TSDUPlayer> allNetworkPlayers;
     public GameObject[] spawners;
+    public bool BallPickedUp;
 
     [Header("Gameplay")]
 
@@ -67,7 +68,7 @@ public class UniverseManager : MonoBehaviour, IOnEventCallback
     public MatchSetup currentMatchSetup;
     private float timeToStartMatch;
 
-    private GameObject currentBall;
+    public GameObject currentBall;
     private MatchState currentState = MatchState.BEFORE;
 
     public MatchState CurrentState
@@ -246,6 +247,27 @@ public class UniverseManager : MonoBehaviour, IOnEventCallback
         RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.Others };
         SendOptions sendOptions = new SendOptions { Reliability = true };
         PhotonNetwork.RaiseEvent(evCode, content, raiseEventOptions, sendOptions);
+    }
+
+    public void RequestPickupBall(int networkPlayerID)
+    {
+        if (PhotonNetwork.IsMasterClient && controlledPlayer.networkNumber +1 == networkPlayerID)
+        {
+            controlledPlayer.HasBall = true;
+            PhotonNetwork.Destroy(currentBall);
+        }
+        else
+        {
+            if (!BallPickedUp)
+            {
+                Debug.LogFormat("Sent RequestPickupBall with values: networkPlayerID = {0}, direction = {1}", networkPlayerID);
+                byte evCode = MultiplayerConnector.RequestBallPickupPhotonEvent;
+                object[] content = new object[] { networkPlayerID };
+                RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.MasterClient };
+                SendOptions sendOptions = new SendOptions { Reliability = true };
+                PhotonNetwork.RaiseEvent(evCode, content, raiseEventOptions, sendOptions);
+            }
+        }
     }
 
     void OnBallCollision()

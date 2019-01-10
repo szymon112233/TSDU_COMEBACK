@@ -61,7 +61,7 @@ public class TSDUPlayer : MonoBehaviourPunCallbacks, IPunObservable {
     private IEnumerator EnableBallPickupCoroutineREF;
     private IEnumerator DisableHitStateCoroutineREF;
 
-    private bool HasBall
+    public bool HasBall
     {
         get
         {
@@ -139,7 +139,7 @@ public class TSDUPlayer : MonoBehaviourPunCallbacks, IPunObservable {
 
         UniverseManager.instance.allNetworkPlayers.Add(photonView.OwnerActorNr, this);
 
-        ballDetector.GetComponent<BallDetetor>().balldetected += () => { HasBall = true; };
+       //ballDetector.GetComponent<BallDetetor>().balldetected += () => { HasBall = true; };
 	}
 	
 	// Update is called once per frame
@@ -177,6 +177,18 @@ public class TSDUPlayer : MonoBehaviourPunCallbacks, IPunObservable {
             powerBar.gameObject.SetActive(false);
             DisableBallDetector();
             UniverseManager.instance.SpawnBall(ballPosition.transform.position,new Vector2(150 * side, 150));
+        }
+    }
+
+    public void PickupBall()
+    {
+        HasBall = true;
+        if (collision.gameObject.GetComponent<PhotonView>().IsMine)
+            PhotonNetwork.Destroy(collision.gameObject);
+        else
+        {
+            collision.gameObject.GetComponent<PhotonView>().TransferOwnership(PhotonNetwork.LocalPlayer);
+            PhotonNetwork.Destroy(collision.gameObject);
         }
     }
 

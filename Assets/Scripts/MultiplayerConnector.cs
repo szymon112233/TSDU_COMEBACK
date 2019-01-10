@@ -24,6 +24,8 @@ public class MultiplayerConnector : MonoBehaviourPunCallbacks
 
     public static readonly byte SendMatchSetupPhotonEvent = 0;
     public static readonly byte PlayerHitPhotonEvent = 1;
+    public static readonly byte RequestBallPickupPhotonEvent = 2;
+    public static readonly byte BallPickedUpPhotonEvent = 3;
 
     #region Private Serializable Fields
 

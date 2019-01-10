@@ -1,8 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
 
-public class PrefabsNetworkPool : MonoBehaviour, Photon.Pun.IPunPrefabPool
+public class PrefabsNetworkPool : MonoBehaviour, IPunPrefabPool
 {
     public List<GameObject> networkPrefabs;
     public GameObject currentBall;
@@ -16,6 +17,10 @@ public class PrefabsNetworkPool : MonoBehaviour, Photon.Pun.IPunPrefabPool
         {
             if (currentBall != null)
                 currentBall.SetActive(false);
+            if (PhotonNetwork.IsMasterClient)
+            {
+                UniverseManager.instance.BallPickedUp = false;
+            }
         }
     }
 
@@ -45,7 +50,6 @@ public class PrefabsNetworkPool : MonoBehaviour, Photon.Pun.IPunPrefabPool
                     Debug.Log("No ball on the scene yet, creating one");
                     currentBall = Instantiate(networkPrefabs[index], position, rotation);
                     currentBall.name = "Ball";
-                    return currentBall;
                 }
                 else
                 {
@@ -55,8 +59,13 @@ public class PrefabsNetworkPool : MonoBehaviour, Photon.Pun.IPunPrefabPool
                     currentBall.GetComponent<BallCollisionDetector>().PickedUp = false;
                     currentBall.GetComponent<Rigidbody2D>().position = position;
                     currentBall.GetComponent<Rigidbody2D>().rotation = 0.0f;
-                    return currentBall;
                 }
+                if (PhotonNetwork.IsMasterClient)
+                {
+                    UniverseManager.instance.BallPickedUp = true;
+                }
+                UniverseManager.instance.currentBall = currentBall;
+                return currentBall;
             case "Player":
                 Debug.Log("Creating new TSDUPlayer!");
                 return Instantiate(networkPrefabs[index], position, rotation);
