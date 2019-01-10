@@ -47,7 +47,7 @@ public class UniverseManager : MonoBehaviour, IOnEventCallback
     public Transform ballSpawnPoint;
     public Sprite[] ballColors;
     public PointsCounter[] pointCounters;
-    public BallDetetor[] outOfFieldDtetectors;
+    public OutOfFieldDetector[] outOfFieldDtetectors;
 
     [Header("Players")]
 
@@ -67,6 +67,7 @@ public class UniverseManager : MonoBehaviour, IOnEventCallback
     public float matchTimer = 60;
     public MatchSetup currentMatchSetup;
     private float timeToStartMatch;
+    public bool throwBack = false;
 
     public GameObject currentBall;
     private MatchState currentState = MatchState.BEFORE;
@@ -144,7 +145,7 @@ public class UniverseManager : MonoBehaviour, IOnEventCallback
 
         for (int i = 0; i < outOfFieldDtetectors.Length; i++)
         {
-            outOfFieldDtetectors[i].balldetected += OnBallOutOfField;
+            outOfFieldDtetectors[i].BallOut += OnBallOutOfField;
         }
 
         ResetState();
@@ -157,7 +158,8 @@ public class UniverseManager : MonoBehaviour, IOnEventCallback
     {
         controlledPlayer.ResetState();
         controlledPlayer.rigibdoy.position = spawners[PhotonNetwork.LocalPlayer.ActorNumber - 1].transform.position;
-        
+        controlledPlayer.transform.position = spawners[PhotonNetwork.LocalPlayer.ActorNumber - 1].transform.position;
+
 
         if (PhotonNetwork.IsMasterClient)
             SpawnBall(ballSpawnPoint.position);
@@ -190,6 +192,15 @@ public class UniverseManager : MonoBehaviour, IOnEventCallback
     {
         byte evCode = MultiplayerConnector.PointScoredPhotonEvent;
         object[] content = new object[] { PhotonNetwork.LocalPlayer.ActorNumber, basketID, PhotonNetwork.Time + 1,5 };
+        RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.Others };
+        SendOptions sendOptions = new SendOptions { Reliability = true };
+        PhotonNetwork.RaiseEvent(evCode, content, raiseEventOptions, sendOptions);
+    }
+
+    private void FireMatchEndedPhotonEvent(double timeToEnd)
+    {
+        byte evCode = MultiplayerConnector.MatchEndedPhotonEvent;
+        object[] content = new object[] { PhotonNetwork.Time + timeToEnd };
         RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.Others };
         SendOptions sendOptions = new SendOptions { Reliability = true };
         PhotonNetwork.RaiseEvent(evCode, content, raiseEventOptions, sendOptions);
@@ -289,25 +300,34 @@ public class UniverseManager : MonoBehaviour, IOnEventCallback
         currentBall.GetComponent<BallCollisionDetector>().OnCollisionWithSurface -= OnBallCollision;
         GameInput.instance.SetInputEnabled(false);
         currentBall.GetComponent<BallCollisionDetector>().PickedUp = true;
-        StartCoroutine(EndMatchCor());
+        FireMatchEndedPhotonEvent(2.0);
+        StartCoroutine(EndMatchCor(2.0f));
     }
 
     void OnBallOutOfFieldEndGame()
     {
         currentBall.GetComponent<BallCollisionDetector>().OnCollisionWithOutOfField -= OnBallOutOfFieldEndGame;
         GameInput.instance.SetInputEnabled(false);
+        FireMatchEndedPhotonEvent(0.0);
         EndMatch();
     }
 
-    void OnBallOutOfField()
+    void OnBallOutOfField(Transform throwPoint)
     {
         if (currentState != MatchState.AFTER)
-            ResetPositons();
+        {
+            if (currentBall.GetComponent<PhotonView>().OwnerActorNr == PhotonNetwork.LocalPlayer.ActorNumber)
+            {
+                int side = throwPoint.position.x > 0 ? -1 : 1;
+                StartCoroutine(DelayedActionCoroutine(1.5f, ()=> { SpawnBall(throwPoint.position, new Vector2(350 * side, 200), 50.0f * side); }));
+                StartCoroutine(DelayedActionCoroutine(2.0f, () => { throwBack = false; }));
+            }
+        }
     }
 
-    IEnumerator EndMatchCor()
+    IEnumerator EndMatchCor(float timeToEnd)
     {
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(timeToEnd);
         EndMatch();
     }
 
@@ -350,6 +370,10 @@ public class UniverseManager : MonoBehaviour, IOnEventCallback
         else if (eventCode == MultiplayerConnector.PointScoredPhotonEvent)
         {
             HandlePointScoredPhotonEvent(photonEvent);
+        }
+        else if (eventCode == MultiplayerConnector.MatchEndedPhotonEvent)
+        {
+            HandleMatchEndedPhotonEvent(photonEvent);
         }
     }
 
@@ -466,9 +490,29 @@ public class UniverseManager : MonoBehaviour, IOnEventCallback
         int basketballID = (int)recievedData[1];
         double timeToReset = (double)recievedData[2] - PhotonNetwork.Time;
 
+        Debug.LogFormat("Recieved PointScored with values: networkPlayerID = {0}, basketballID=  {1}, timeToReset = {2}", playerNetworkID, basketballID, timeToReset);
+
         score[basketballID]++;
         FireScoreChanged();
         currentBall.GetComponent<BallCollisionDetector>().PickedUp = true;
         StartCoroutine(DelayedActionCoroutine((float)timeToReset, ResetPositons));
+    }
+
+    public void HandleMatchEndedPhotonEvent(EventData photonEvent)
+    {
+        object[] recievedData = (object[])photonEvent.CustomData;
+        double timeToEnd = (double)recievedData[0] - PhotonNetwork.Time;
+
+        GameInput.instance.SetInputEnabled(false);
+        currentBall.GetComponent<BallCollisionDetector>().PickedUp = true;
+
+        if (timeToEnd < 0)
+        {
+            EndMatch(); 
+        }
+        else
+        {
+            StartCoroutine(EndMatchCor((float)timeToEnd));
+        }
     }
 }
