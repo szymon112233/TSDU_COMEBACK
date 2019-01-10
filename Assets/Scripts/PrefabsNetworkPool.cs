@@ -19,7 +19,7 @@ public class PrefabsNetworkPool : MonoBehaviour, IPunPrefabPool
                 currentBall.SetActive(false);
             if (PhotonNetwork.IsMasterClient)
             {
-                UniverseManager.instance.BallPickedUp = false;
+                UniverseManager.instance.BallPickedUp = true;
             }
         }
     }
@@ -62,7 +62,7 @@ public class PrefabsNetworkPool : MonoBehaviour, IPunPrefabPool
                 }
                 if (PhotonNetwork.IsMasterClient)
                 {
-                    UniverseManager.instance.BallPickedUp = true;
+                    UniverseManager.instance.BallPickedUp = false;
                 }
                 UniverseManager.instance.currentBall = currentBall;
                 return currentBall;

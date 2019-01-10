@@ -180,19 +180,6 @@ public class TSDUPlayer : MonoBehaviourPunCallbacks, IPunObservable {
         }
     }
 
-    public void PickupBall()
-    {
-        HasBall = true;
-        if (collision.gameObject.GetComponent<PhotonView>().IsMine)
-            PhotonNetwork.Destroy(collision.gameObject);
-        else
-        {
-            collision.gameObject.GetComponent<PhotonView>().TransferOwnership(PhotonNetwork.LocalPlayer);
-            PhotonNetwork.Destroy(collision.gameObject);
-        }
-    }
-
-
     private void FixedUpdate()
     {
         if (m_photonView.IsMine)

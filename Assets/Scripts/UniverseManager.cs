@@ -251,22 +251,29 @@ public class UniverseManager : MonoBehaviour, IOnEventCallback
 
     public void RequestPickupBall(int networkPlayerID)
     {
+        Debug.LogFormat("RequestPickupBall: networkPlayerID = {0}, controlledPlayer.networkNumber +1 = {1}", networkPlayerID, controlledPlayer.networkNumber + 1);
         if (PhotonNetwork.IsMasterClient && controlledPlayer.networkNumber +1 == networkPlayerID)
-        {
-            controlledPlayer.HasBall = true;
-            PhotonNetwork.Destroy(currentBall);
-        }
-        else
         {
             if (!BallPickedUp)
             {
-                Debug.LogFormat("Sent RequestPickupBall with values: networkPlayerID = {0}, direction = {1}", networkPlayerID);
-                byte evCode = MultiplayerConnector.RequestBallPickupPhotonEvent;
-                object[] content = new object[] { networkPlayerID };
-                RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.MasterClient };
-                SendOptions sendOptions = new SendOptions { Reliability = true };
-                PhotonNetwork.RaiseEvent(evCode, content, raiseEventOptions, sendOptions);
+                controlledPlayer.HasBall = true;
+                if (currentBall.gameObject.GetComponent<PhotonView>().IsMine)
+                    PhotonNetwork.Destroy(currentBall);
+                else
+                {
+                    currentBall.gameObject.GetComponent<PhotonView>().TransferOwnership(PhotonNetwork.LocalPlayer);
+                    PhotonNetwork.Destroy(currentBall);
+                }
             }
+        }
+        else
+        {
+            Debug.LogFormat("Sent RequestPickupBall with values: networkPlayerID = {0}", networkPlayerID);
+            byte evCode = MultiplayerConnector.RequestBallPickupPhotonEvent;
+            object[] content = new object[] { networkPlayerID };
+            RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.MasterClient };
+            SendOptions sendOptions = new SendOptions { Reliability = true };
+            PhotonNetwork.RaiseEvent(evCode, content, raiseEventOptions, sendOptions);
         }
     }
 
@@ -336,8 +343,6 @@ public class UniverseManager : MonoBehaviour, IOnEventCallback
                 currentMatchSetup.PlayerSkinsIndexes,
                 timeToStartMatch);
             InitGame();
-
-
         }
 
         else if(eventCode == MultiplayerConnector.PlayerHitPhotonEvent)
@@ -352,6 +357,46 @@ public class UniverseManager : MonoBehaviour, IOnEventCallback
             else
             {
                 Debug.LogErrorFormat("Couldn't find other player with networkID: {0}", playerNetworkID);
+            }
+        }
+        else if (eventCode == MultiplayerConnector.RequestBallPickupPhotonEvent)
+        {
+            object[] recievedData = (object[])photonEvent.CustomData;
+            int playerNetworkID = (int)recievedData[0];
+            Debug.LogFormat("Recieved RequestBallPickup with values: networkPlayerID = {0}", playerNetworkID);
+            if (allNetworkPlayers.ContainsKey(playerNetworkID))
+            {
+                if (!BallPickedUp)
+                {
+                    Debug.LogFormat("Sent RequestBallPickup with values: networkPlayerID = {0}", playerNetworkID);
+                    byte evCode = MultiplayerConnector.BallPickedUpPhotonEvent;
+                    object[] content = new object[] { playerNetworkID };
+                    RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.Others };
+                    SendOptions sendOptions = new SendOptions { Reliability = true };
+                    PhotonNetwork.RaiseEvent(evCode, content, raiseEventOptions, sendOptions);
+                    if (currentBall.gameObject.GetComponent<PhotonView>().IsMine)
+                        PhotonNetwork.Destroy(currentBall);
+                    else
+                    {
+                        currentBall.gameObject.GetComponent<PhotonView>().TransferOwnership(PhotonNetwork.LocalPlayer);
+                        PhotonNetwork.Destroy(currentBall);
+                    }
+                }
+            }
+            else
+            {
+                Debug.LogErrorFormat("Couldn't find other player with networkID: {0}", playerNetworkID);
+            }
+        }
+
+        else if (eventCode == MultiplayerConnector.BallPickedUpPhotonEvent)
+        {
+            object[] recievedData = (object[])photonEvent.CustomData;
+            int playerNetworkID = (int)recievedData[0];
+            Debug.LogFormat("Recieved BallPickedUp with values: networkPlayerID = {0}", playerNetworkID);
+            if (controlledPlayer.networkNumber +1 == playerNetworkID)
+            {
+                controlledPlayer.HasBall = true;
             }
         }
     }
@@ -379,7 +424,5 @@ public class UniverseManager : MonoBehaviour, IOnEventCallback
                 InitGame();
             } 
         }
-        
     }
-
 }
