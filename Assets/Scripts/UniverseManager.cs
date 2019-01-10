@@ -15,7 +15,7 @@ public enum MatchState
 public class UniverseManager : MonoBehaviour, IOnEventCallback
 {
 
-    #region singleton
+    #region fake singleton
     public static UniverseManager instance = null;
 
     //Awake is always called before any Start functions
@@ -26,8 +26,6 @@ public class UniverseManager : MonoBehaviour, IOnEventCallback
 
         else if (instance != this)
             Destroy(gameObject);
-
-        DontDestroyOnLoad(gameObject);
 
         Init();
     }
@@ -112,7 +110,6 @@ public class UniverseManager : MonoBehaviour, IOnEventCallback
             MapIndex = 0,
             PlayerCount = 2,
             PlayerSkinsIndexes = new int[2]};
-        MultiplayerConnector.PlayerEnteredRoom += OnPlayerEnteredRoom;
         BallNetworkSync.BallCreated += (GameObject ball) => { currentBall = ball; };
     }
 
@@ -190,7 +187,7 @@ public class UniverseManager : MonoBehaviour, IOnEventCallback
 
     private void FirePointScoredPhotonEvent(int basketID)
     {
-        byte evCode = MultiplayerConnector.PointScoredPhotonEvent;
+        byte evCode = ConnectionManager.PointScoredPhotonEvent;
         object[] content = new object[] { PhotonNetwork.LocalPlayer.ActorNumber, basketID, PhotonNetwork.Time + 1,5 };
         RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.Others };
         SendOptions sendOptions = new SendOptions { Reliability = true };
@@ -199,11 +196,30 @@ public class UniverseManager : MonoBehaviour, IOnEventCallback
 
     private void FireMatchEndedPhotonEvent(double timeToEnd)
     {
-        byte evCode = MultiplayerConnector.MatchEndedPhotonEvent;
+        byte evCode = ConnectionManager.MatchEndedPhotonEvent;
         object[] content = new object[] { PhotonNetwork.Time + timeToEnd };
         RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.Others };
         SendOptions sendOptions = new SendOptions { Reliability = true };
         PhotonNetwork.RaiseEvent(evCode, content, raiseEventOptions, sendOptions);
+    }
+
+    private void FireSendMatchSetupPhotonEvent()
+    {
+        Debug.LogError("Sending Event");
+        byte evCode = ConnectionManager.SendMatchSetupPhotonEvent;
+        object[] content = new object[] {
+                currentMatchSetup.BallColorIndex,
+                currentMatchSetup.CountDownTime,
+                currentMatchSetup.MatchTime,
+                currentMatchSetup.MapIndex,
+                currentMatchSetup.PlayerCount,
+                currentMatchSetup.PlayerSkinsIndexes,
+                PhotonNetwork.Time + currentMatchSetup.CountDownTime};
+        RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.Others };
+        SendOptions sendOptions = new SendOptions { Reliability = true };
+        PhotonNetwork.RaiseEvent(evCode, content, raiseEventOptions, sendOptions);
+        PhotonNetwork.CurrentRoom.IsOpen = false;
+        InitGame();
     }
 
     private void FireFoulsChanged()
@@ -241,7 +257,9 @@ public class UniverseManager : MonoBehaviour, IOnEventCallback
             TimeChanged(matchTimer);
 
         if (Input.GetKeyDown(KeyCode.R))
-            ResetState();
+        {
+            //ConnectionManager.instance.Disconnect();
+        }  
     }
 
     public void SpawnBall(Vector3 position, Vector2 initialForce = new Vector2(), float torque = 0.0f)
@@ -260,7 +278,7 @@ public class UniverseManager : MonoBehaviour, IOnEventCallback
     public void HitPlayer(int networkPlayerID, int direction)
     {
         Debug.LogFormat("Sent HitPlayer with values: networkPlayerID = {0}, direction = {1}", networkPlayerID, direction);
-        byte evCode = MultiplayerConnector.PlayerHitPhotonEvent; 
+        byte evCode = ConnectionManager.PlayerHitPhotonEvent; 
         object[] content = new object[] { networkPlayerID, direction };
         RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.Others };
         SendOptions sendOptions = new SendOptions { Reliability = true };
@@ -287,7 +305,7 @@ public class UniverseManager : MonoBehaviour, IOnEventCallback
         else
         {
             Debug.LogFormat("Sent RequestPickupBall with values: networkPlayerID = {0}", networkPlayerID);
-            byte evCode = MultiplayerConnector.RequestBallPickupPhotonEvent;
+            byte evCode = ConnectionManager.RequestBallPickupPhotonEvent;
             object[] content = new object[] { networkPlayerID };
             RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.MasterClient };
             SendOptions sendOptions = new SendOptions { Reliability = true };
@@ -349,56 +367,35 @@ public class UniverseManager : MonoBehaviour, IOnEventCallback
     {
         byte eventCode = photonEvent.Code;
 
-        if (eventCode == MultiplayerConnector.SendMatchSetupPhotonEvent)
+        if (eventCode == ConnectionManager.SendMatchSetupPhotonEvent)
         {
             HandleSendMatchSetupPhotonEvent(photonEvent);
         }
 
-        else if(eventCode == MultiplayerConnector.PlayerHitPhotonEvent)
+        else if(eventCode == ConnectionManager.PlayerHitPhotonEvent)
         {
             HandlePlayerHitPhotonEvent(photonEvent);
         }
-        else if (eventCode == MultiplayerConnector.RequestBallPickupPhotonEvent)
+        else if (eventCode == ConnectionManager.RequestBallPickupPhotonEvent)
         {
             HandleRequestBallPickupPhotonEvent(photonEvent);
         }
 
-        else if (eventCode == MultiplayerConnector.BallPickedUpPhotonEvent)
+        else if (eventCode == ConnectionManager.BallPickedUpPhotonEvent)
         {
             HandleBallPickedUpPhotonEvent(photonEvent);
         }
-        else if (eventCode == MultiplayerConnector.PointScoredPhotonEvent)
+        else if (eventCode == ConnectionManager.PointScoredPhotonEvent)
         {
             HandlePointScoredPhotonEvent(photonEvent);
         }
-        else if (eventCode == MultiplayerConnector.MatchEndedPhotonEvent)
+        else if (eventCode == ConnectionManager.MatchEndedPhotonEvent)
         {
             HandleMatchEndedPhotonEvent(photonEvent);
         }
-    }
-
-    public void OnPlayerEnteredRoom(int count)
-    {
-        if (PhotonNetwork.IsMasterClient)
+        else if (eventCode == ConnectionManager.LevelLoadedPhotonEvent)
         {
-            if (count == currentMatchSetup.PlayerCount)
-            {
-                Debug.LogError("Sending Event");
-                byte evCode = MultiplayerConnector.SendMatchSetupPhotonEvent;
-                object[] content = new object[] {
-                    currentMatchSetup.BallColorIndex,
-                    currentMatchSetup.CountDownTime,
-                    currentMatchSetup.MatchTime,
-                    currentMatchSetup.MapIndex,
-                    currentMatchSetup.PlayerCount,
-                    currentMatchSetup.PlayerSkinsIndexes,
-                    PhotonNetwork.Time + currentMatchSetup.CountDownTime};
-                RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.Others };
-                SendOptions sendOptions = new SendOptions { Reliability = true };
-                PhotonNetwork.RaiseEvent(evCode, content, raiseEventOptions, sendOptions);
-                PhotonNetwork.CurrentRoom.IsOpen = false;
-                InitGame();
-            } 
+            HandleLevelLoadedPhotonEvent(photonEvent);
         }
     }
 
@@ -452,7 +449,7 @@ public class UniverseManager : MonoBehaviour, IOnEventCallback
             if (!BallPickedUp)
             {
                 Debug.LogFormat("Sent RequestBallPickup with values: networkPlayerID = {0}", playerNetworkID);
-                byte evCode = MultiplayerConnector.BallPickedUpPhotonEvent;
+                byte evCode = ConnectionManager.BallPickedUpPhotonEvent;
                 object[] content = new object[] { playerNetworkID };
                 RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.Others };
                 SendOptions sendOptions = new SendOptions { Reliability = true };
@@ -513,6 +510,17 @@ public class UniverseManager : MonoBehaviour, IOnEventCallback
         else
         {
             StartCoroutine(EndMatchCor((float)timeToEnd));
+        }
+    }
+
+    public void HandleLevelLoadedPhotonEvent(EventData photonEvent)
+    {
+        object[] recievedData = (object[])photonEvent.CustomData;
+        int playerNetworkID = (int)recievedData[0];
+
+        if (playerNetworkID != PhotonNetwork.LocalPlayer.ActorNumber)
+        {
+            FireSendMatchSetupPhotonEvent();
         }
     }
 }

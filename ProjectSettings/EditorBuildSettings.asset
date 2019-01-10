@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/MultiplayerJoin.unity
+    guid: 87b99f87277c73d49bde88ac3903355d
+  - enabled: 1
     path: Assets/Scenes/SlamDunk!.unity
     guid: 4bc3893fca41913479d23b4b37c96d15
   m_configObjects: {}

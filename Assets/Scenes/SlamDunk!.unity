@@ -113,6 +113,47 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &106611654
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 106611656}
+  - component: {fileID: 106611655}
+  m_Layer: 0
+  m_Name: GameInput
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &106611655
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 106611654}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd8f4cbbf61f1b744a28a03a2554e391, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  players: []
+--- !u!4 &106611656
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 106611654}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 7
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &315866799
 GameObject:
   m_ObjectHideFlags: 0
@@ -1448,9 +1489,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1733577709}
   - component: {fileID: 1733577710}
-  - component: {fileID: 1733577711}
-  - component: {fileID: 1733577712}
-  - component: {fileID: 1733577713}
   m_Layer: 0
   m_Name: UniverseManager
   m_TagString: Untagged
@@ -1510,7 +1548,7 @@ MonoBehaviour:
   score: 
   fouls: 
   countDownDuration: 3
-  matchDuration: 90
+  matchDuration: 180
   matchTimer: 0
   currentMatchSetup:
     MatchTime: 0
@@ -1520,45 +1558,6 @@ MonoBehaviour:
     PlayerCount: 0
     PlayerSkinsIndexes: 
   throwBack: 0
-  currentBall: {fileID: 0}
---- !u!114 &1733577711
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1733577708}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bd8f4cbbf61f1b744a28a03a2554e391, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  players: []
---- !u!114 &1733577712
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1733577708}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cb6cf2416502a4145a4b032d1f1dc2bc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  prefabPool: {fileID: 1733577713}
---- !u!114 &1733577713
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1733577708}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9ba18bdc5b912834e989886a6273654a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  networkPrefabs:
-  - {fileID: 1414170368522762, guid: bf90924adc6974f42b68bce5a50f9252, type: 2}
-  - {fileID: 1818661215439096, guid: 68e34bc27ed581c4d8d90d63b311c16e, type: 2}
   currentBall: {fileID: 0}
 --- !u!114 &1840517418 stripped
 MonoBehaviour:
