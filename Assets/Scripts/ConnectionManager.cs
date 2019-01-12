@@ -41,7 +41,10 @@ public class ConnectionManager : MonoBehaviourPunCallbacks
             instance = this;
 
         else if (instance != this)
+        {
             Destroy(gameObject);
+            return;
+        }
 
         DontDestroyOnLoad(gameObject);
 

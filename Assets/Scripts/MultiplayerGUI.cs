@@ -20,7 +20,7 @@ public class MultiplayerGUI : MonoBehaviour {
     private void Awake()
     {
         ShowMainPanel();
-        ConnectionManager.ConnectionStatusUpdated += (string value) => { infoText.text = value; };
+        ConnectionManager.ConnectionStatusUpdated += OnConnectionStatusUpdated;
     }
 
     public void OnBackClicked()
@@ -85,4 +85,13 @@ public class MultiplayerGUI : MonoBehaviour {
         passwordPanel.SetActive(false);
     }
 
+    private void OnConnectionStatusUpdated(string value)
+    {
+        infoText.text = value;
+    }
+
+    private void OnDestroy()
+    {
+        ConnectionManager.ConnectionStatusUpdated -= OnConnectionStatusUpdated;
+    }
 }

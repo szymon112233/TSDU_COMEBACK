@@ -258,7 +258,7 @@ public class UniverseManager : MonoBehaviour, IOnEventCallback
 
         if (Input.GetKeyDown(KeyCode.R))
         {
-            //ConnectionManager.instance.Disconnect();
+            ConnectionManager.instance.Disconnect();
         }  
     }
 
