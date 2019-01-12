@@ -61,6 +61,7 @@ public class UniverseManager : MonoBehaviour {
     public GameObject playerPrefab;
     public Cinemachine.CinemachineTargetGroup targetGroup;
     public float CameraFollowRadius = 300.0f;
+    public float CameraFollowRadiusBall = 25.0f;
     public TSDUPlayer[] players;
     public GameObject[] spawners;
     public int[] presetsForPlayers;
@@ -229,7 +230,7 @@ public class UniverseManager : MonoBehaviour {
             currentBall.GetComponent<BallCollisionDetector>().OnCollisionWithSurface += OnBallCollision;
             currentBall.GetComponent<BallCollisionDetector>().OnCollisionWithOutOfField += OnBallOutOfFieldEndGame;
         }
-        targetGroup.AddMember(currentBall.transform, 1, CameraFollowRadius);
+        targetGroup.AddMember(currentBall.transform, 1, CameraFollowRadiusBall);
     }
 
     void OnBallCollision()

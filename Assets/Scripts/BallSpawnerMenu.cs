@@ -28,7 +28,6 @@ public class BallSpawnerMenu : MonoBehaviour {
         for (int i = 0; i < ballsPool.Length; i++)
         {
             ballsPool[i] = Instantiate(ballPrefab);
-            ballsPool[i].transform.position = new Vector3(10000, 10000, 10000);
             ballsPool[i].SetActive(false);
         }
     }
@@ -39,7 +38,7 @@ public class BallSpawnerMenu : MonoBehaviour {
         if (spawnTimer >= spawnTime)
         {
             spawnTimer = 0.0f;
-            ballsPool[currentBall].transform.position = new Vector3(Random.Range(MinX, MaxX), Screen.height, 100);
+            ballsPool[currentBall].transform.position = new Vector3(Random.Range(MinX, MaxX), Screen.height);
             ballsPool[currentBall].GetComponent<Rigidbody2D>().velocity = new Vector2();
             ballsPool[currentBall].SetActive(true);
             currentBall++;
