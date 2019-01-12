@@ -1673,14 +1673,7 @@ MonoBehaviour:
   ballPrefab: {fileID: 1414170368522762, guid: bf90924adc6974f42b68bce5a50f9252, type: 2}
   currentBallColor: 0
   ballSpawnPoint: {fileID: 1701875464}
-  ballColors:
-  - {fileID: 21300000, guid: da6169712434358488e587a55918f13c, type: 3}
-  - {fileID: 21300002, guid: da6169712434358488e587a55918f13c, type: 3}
-  - {fileID: 21300004, guid: da6169712434358488e587a55918f13c, type: 3}
-  - {fileID: 21300006, guid: da6169712434358488e587a55918f13c, type: 3}
-  - {fileID: 21300008, guid: da6169712434358488e587a55918f13c, type: 3}
-  - {fileID: 21300010, guid: da6169712434358488e587a55918f13c, type: 3}
-  - {fileID: 21300012, guid: da6169712434358488e587a55918f13c, type: 3}
+  ballColors: []
   pointCounters:
   - {fileID: 1122959805}
   - {fileID: 1840517418}
@@ -1700,27 +1693,7 @@ MonoBehaviour:
   - {fileID: 2126741994}
   - {fileID: 1898575036}
   - {fileID: 161424880}
-  presets:
-  - Shirt: {r: 0, g: 0.12056247, b: 0.8867924, a: 0}
-    Pants: {r: 0, g: 0.12156863, b: 0.8901961, a: 0}
-    Acessories: {r: 1, g: 1, b: 1, a: 0}
-    Skin: {r: 1, g: 0.8432354, b: 0.504717, a: 0}
-  - Shirt: {r: 1, g: 0.99437773, b: 0, a: 0}
-    Pants: {r: 1, g: 0.96061194, b: 0, a: 0}
-    Acessories: {r: 0.65453374, g: 0, b: 0.6981132, a: 0}
-    Skin: {r: 0.3679245, g: 0.21784753, b: 0.09545212, a: 0}
-  - Shirt: {r: 1, g: 1, b: 1, a: 0}
-    Pants: {r: 1, g: 0, b: 0, a: 0}
-    Acessories: {r: 0.7764706, g: 0, b: 0, a: 0}
-    Skin: {r: 1, g: 0.96978587, b: 0.8632076, a: 1}
-  - Shirt: {r: 0, g: 0, b: 0, a: 0}
-    Pants: {r: 0, g: 0, b: 0, a: 0}
-    Acessories: {r: 0.8773585, g: 0, b: 0, a: 0}
-    Skin: {r: 0.9150943, g: 0.94509804, b: 0.36862746, a: 1}
-  - Shirt: {r: 0, g: 0.3207547, b: 0.03335699, a: 1}
-    Pants: {r: 0, g: 0.32156864, b: 0.03529412, a: 0}
-    Acessories: {r: 1, g: 1, b: 1, a: 0}
-    Skin: {r: 0.5471698, g: 0.37166646, b: 0.14195444, a: 1}
+  presets: []
   BallPickedUp: 0
   score: 
   fouls: 

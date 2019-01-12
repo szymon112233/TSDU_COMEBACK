@@ -116,9 +116,14 @@ public class UniverseManager : MonoBehaviour, IOnEventCallback
     {
         allPlayers = new Dictionary<int, TSDUPlayer>();
         currentMatchSetup = GameState.Instance.defaultGameData.defaultSetup;
+        presets = GameState.Instance.defaultGameData.presets;
+        ballColors = GameState.Instance.defaultGameData.balls;
 
         if (GameState.Instance.isMultiplayer)
-            BallNetworkSync.BallCreated += (GameObject ball) => { currentBall = ball; };
+            BallNetworkSync.BallCreated += (GameObject ball) => {
+                currentBall = ball;
+                currentBall.GetComponent<SpriteRenderer>().sprite = ballColors[currentMatchSetup.BallColorIndex];
+            };
         else
             InitGameSingleplayer();
     }

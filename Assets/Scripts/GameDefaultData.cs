@@ -8,5 +8,7 @@ public class GameDefaultData : ScriptableObject
 {
     public MatchSetup defaultSetup;
 
+    public Sprite[] balls;
+
     public PlayerColors[] presets;
 }
