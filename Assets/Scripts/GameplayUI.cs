@@ -28,6 +28,10 @@ public class GameplayUI : MonoBehaviour {
     public GameObject p1winsImage;
     public GameObject p2winsImage;
     public GameObject tieImage;
+    [Header("Mutiplayer")]
+    public GameObject multiplayerInfoPanel;
+    public Text waitingforPlayersText;
+
 
     private Vector2Int score;
     private Vector2Int folus;
@@ -45,8 +49,8 @@ public class GameplayUI : MonoBehaviour {
         UniverseManager.FoulsChanged += UpdateFaulText;
         UniverseManager.TimeChanged += UpdateTimeText;
         UniverseManager.EndOfTheMatch += OnEndMatch;
-        UniverseManager.MatchRestarted += HideSummaryPanel;
-        font.material.mainTexture.filterMode = FilterMode.Point;
+        UniverseManager.MatchStarted += HideSummaryPanel;
+        UniverseManager.MatchStarted += HideMutiplayerInfo;
     }
 
     void UpdateScoreText(Vector2Int scores)
@@ -106,4 +110,19 @@ public class GameplayUI : MonoBehaviour {
         afterMatchSummary.SetActive(false);
     }
 
+    public void HideMutiplayerInfo()
+    {
+        multiplayerInfoPanel.SetActive(false);
+    }
+
+
+    private void OnDestroy()
+    {
+        UniverseManager.ScoreChanged -= UpdateScoreText;
+        UniverseManager.FoulsChanged -= UpdateFaulText;
+        UniverseManager.TimeChanged -= UpdateTimeText;
+        UniverseManager.EndOfTheMatch -= OnEndMatch;
+        UniverseManager.MatchStarted -= HideSummaryPanel;
+        UniverseManager.MatchStarted -= HideMutiplayerInfo;
+    }
 }

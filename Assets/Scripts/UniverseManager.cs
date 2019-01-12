@@ -1,7 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using Photon.Pun;
+using Photon.Realtime;
+using ExitGames.Client.Photon;
 
 public enum MatchState
 {
@@ -19,9 +21,10 @@ public struct PlayerColors
     public Color Skin;
 }
 
-public class UniverseManager : MonoBehaviour {
+public class UniverseManager : MonoBehaviour, IOnEventCallback
+{
 
-    #region singleton
+    #region fake singleton
     public static UniverseManager instance = null;
 
     //Awake is always called before any Start functions
@@ -33,9 +36,7 @@ public class UniverseManager : MonoBehaviour {
         else if (instance != this)
             Destroy(gameObject);
 
-        DontDestroyOnLoad(gameObject);
-
-        InitGame();
+        Init();
     }
 
     #endregion
@@ -44,8 +45,7 @@ public class UniverseManager : MonoBehaviour {
     public static System.Action<Vector2Int> FoulsChanged;
     public static System.Action<float> TimeChanged;
     public static System.Action<Vector2Int> EndOfTheMatch;
-    public static System.Action MatchRestarted;
-
+    public static System.Action MatchStarted;
 
     [Header("Ball")]
     public GameObject ballPrefab;
@@ -54,18 +54,20 @@ public class UniverseManager : MonoBehaviour {
     public Transform ballSpawnPoint;
     public Sprite[] ballColors;
     public PointsCounter[] pointCounters;
-    public BallDetetor[] outOfFieldDtetectors;
+    public OutOfFieldDetector[] outOfFieldDtetectors;
 
-    [Header("Player")]
+    [Header("Players")]
 
     public GameObject playerPrefab;
     public Cinemachine.CinemachineTargetGroup targetGroup;
     public float CameraFollowRadius = 300.0f;
     public float CameraFollowRadiusBall = 25.0f;
-    public TSDUPlayer[] players;
+    public TSDUPlayer controlledPlayer;
+    public Dictionary<int, TSDUPlayer> allNetworkPlayers;
     public GameObject[] spawners;
     public int[] presetsForPlayers;
     public PlayerColors[] presets; 
+    public bool BallPickedUp;
 
     [Header("Gameplay")]
 
@@ -73,12 +75,13 @@ public class UniverseManager : MonoBehaviour {
     public int[] fouls;
     public float countDownDuration = 3;
     public float matchDuration = 180;
-    public float matchTimer;
+    public float matchTimer = 60;
+    public MatchSetup currentMatchSetup;
+    private float timeToStartMatch;
+    public bool throwBack = false;
 
-    private GameObject currentBall;
+    public GameObject currentBall;
     private MatchState currentState = MatchState.BEFORE;
-
-    private uint lastPlayer = 0;
 
     public MatchState CurrentState
     {
@@ -92,21 +95,44 @@ public class UniverseManager : MonoBehaviour {
             currentState = value; 
             if (value == MatchState.MATCH)
             {
-                currentBall.GetComponent<Rigidbody2D>().simulated = true;
+
+                //currentBall.GetComponent<Rigidbody2D>().simulated = true;
                 GameInput.instance.SetInputEnabled(true);
             }
                 
         }
     }
 
+    public void OnEnable()
+    {
+        PhotonNetwork.AddCallbackTarget(this);
+    }
+
+    public void OnDisable()
+    {
+        PhotonNetwork.RemoveCallbackTarget(this);
+    }
+
+    void Init()
+    {
+        allNetworkPlayers = new Dictionary<int, TSDUPlayer>();
+        currentMatchSetup = new MatchSetup() {
+            BallColorIndex = currentBallColor,
+            CountDownTime = countDownDuration,
+            MatchTime = matchDuration,
+            MapIndex = 0,
+            PlayerCount = 2,
+            PlayerSkinsIndexes = new int[2]};
+        BallNetworkSync.BallCreated += (GameObject ball) => { currentBall = ball; };
+    }
+
     void InitGame()
     {
         spawners = GameObject.FindGameObjectsWithTag("SpawnPoint");
-        players = new TSDUPlayer[spawners.Length];
 
         for (int i = 0; i < spawners.Length; i++)
         {
-            GameObject go = Instantiate(playerPrefab, spawners[i].transform.position, Quaternion.identity);
+            /*GameObject go = Instantiate(playerPrefab, spawners[i].transform.position, Quaternion.identity);
             players[i] = go.GetComponent<TSDUPlayer>();
             players[i].ballPosition.GetComponent<SpriteRenderer>().sprite = ballColors[currentBallColor];
             players[i].number = (uint)i;
@@ -114,69 +140,111 @@ public class UniverseManager : MonoBehaviour {
             players[i].sprite.material.SetColor("_PantsColor", presets[presetsForPlayers[i]].Pants);
             players[i].sprite.material.SetColor("_ShoesColor", presets[presetsForPlayers[i]].Acessories);
             players[i].sprite.material.SetColor("_SkinColor",presets[presetsForPlayers[i]].Skin);
-            targetGroup.AddMember(go.transform, 1, CameraFollowRadius);
+            targetGroup.AddMember(go.transform, 1, CameraFollowRadius);*/
         }
+        GameObject go = PhotonNetwork.Instantiate(playerPrefab.name, spawners[PhotonNetwork.LocalPlayer.ActorNumber-1].transform.position, Quaternion.identity, 0);
+        controlledPlayer = go.GetComponent<TSDUPlayer>();
+        controlledPlayer.ballPosition.GetComponent<SpriteRenderer>().sprite = ballColors[currentMatchSetup.BallColorIndex];
+        targetGroup.AddMember(go.transform, 1, 50.0f);
 
-        score = new int[players.Length];
-        fouls = new int[players.Length];
+        score = new int[currentMatchSetup.PlayerCount];
+        fouls = new int[currentMatchSetup.PlayerCount];
 
-        for (int i = 0; i < players.Length; i++)
-        {
-            int j = i;
-            players[i].BallThrown += () => { lastPlayer = players[j].number; };
-        }
         for (int j = 0; j < pointCounters.Length; j++)
         {
             int i = j;
             pointCounters[j].PointScored += () => {
-                score[i]++;
-                currentBall.GetComponent<BallCollisionDetector>().PickedUp = true;
-                StartCoroutine(DelayedActionCoroutine(1.5f, ResetPositons));
-                FireScoreChanged();
+                if (currentBall.GetComponent<PhotonView>().OwnerActorNr == PhotonNetwork.LocalPlayer.ActorNumber)
+                {
+                    score[i]++;
+                    FireScoreChanged();
+                    FirePointScoredPhotonEvent(i);
+                    currentBall.GetComponent<BallCollisionDetector>().PickedUp = true;
+                    StartCoroutine(DelayedActionCoroutine(1.5f, ResetPositons));
+                }
             };
         }
+
         for (int i = 0; i < outOfFieldDtetectors.Length; i++)
         {
-            outOfFieldDtetectors[i].balldetected += OnBallOutOfField;
+            outOfFieldDtetectors[i].BallOut += OnBallOutOfField;
         }
 
         ResetState();
+
+        if(!PhotonNetwork.IsMasterClient)
+            matchTimer = timeToStartMatch;
     }
 
     void ResetPositons()
     {
-        for (int i = 0; i < spawners.Length; i++)
-        {
-            players[i].transform.position = spawners[i].transform.position;
-            players[i].ResetState();
-        }
-        SpawnBall(ballSpawnPoint.position);
+        controlledPlayer.ResetState();
+        controlledPlayer.rigibdoy.position = spawners[PhotonNetwork.LocalPlayer.ActorNumber - 1].transform.position;
+        controlledPlayer.transform.position = spawners[PhotonNetwork.LocalPlayer.ActorNumber - 1].transform.position;
 
+
+        if (PhotonNetwork.IsMasterClient)
+            SpawnBall(ballSpawnPoint.position);
     }
 
     private void ResetState()
     {
         CurrentState = MatchState.BEFORE;
-        for (int i = 0; i < players.Length; i++)
+        for (int i = 0; i < score.Length; i++)
         {
             score[i] = 0;
             fouls[i] = 0;
         }
-        matchTimer = countDownDuration;
-        lastPlayer = 0;
+        matchTimer = currentMatchSetup.CountDownTime;
         FireScoreChanged();
         FireFoulsChanged();
         ResetPositons();
-        currentBall.GetComponent<Rigidbody2D>().simulated = false;
         GameInput.instance.SetInputEnabled(false);
-        if (MatchRestarted != null)
-            MatchRestarted();
+        if (MatchStarted != null)
+            MatchStarted();
     }
 
     private void FireScoreChanged()
     {
         if (ScoreChanged != null)
             ScoreChanged(new Vector2Int(score[0], score[1]));
+    }
+
+    private void FirePointScoredPhotonEvent(int basketID)
+    {
+        byte evCode = ConnectionManager.PointScoredPhotonEvent;
+        object[] content = new object[] { PhotonNetwork.LocalPlayer.ActorNumber, basketID, PhotonNetwork.Time + 1,5 };
+        RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.Others };
+        SendOptions sendOptions = new SendOptions { Reliability = true };
+        PhotonNetwork.RaiseEvent(evCode, content, raiseEventOptions, sendOptions);
+    }
+
+    private void FireMatchEndedPhotonEvent(double timeToEnd)
+    {
+        byte evCode = ConnectionManager.MatchEndedPhotonEvent;
+        object[] content = new object[] { PhotonNetwork.Time + timeToEnd };
+        RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.Others };
+        SendOptions sendOptions = new SendOptions { Reliability = true };
+        PhotonNetwork.RaiseEvent(evCode, content, raiseEventOptions, sendOptions);
+    }
+
+    private void FireSendMatchSetupPhotonEvent()
+    {
+        Debug.LogError("Sending Event");
+        byte evCode = ConnectionManager.SendMatchSetupPhotonEvent;
+        object[] content = new object[] {
+                currentMatchSetup.BallColorIndex,
+                currentMatchSetup.CountDownTime,
+                currentMatchSetup.MatchTime,
+                currentMatchSetup.MapIndex,
+                currentMatchSetup.PlayerCount,
+                currentMatchSetup.PlayerSkinsIndexes,
+                PhotonNetwork.Time + currentMatchSetup.CountDownTime};
+        RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.Others };
+        SendOptions sendOptions = new SendOptions { Reliability = true };
+        PhotonNetwork.RaiseEvent(evCode, content, raiseEventOptions, sendOptions);
+        PhotonNetwork.CurrentRoom.IsOpen = false;
+        InitGame();
     }
 
     public void FireFoulsChanged()
@@ -204,7 +272,7 @@ public class UniverseManager : MonoBehaviour {
         else if (CurrentState == MatchState.BEFORE)
         {
             CurrentState = MatchState.MATCH;
-            matchTimer = matchDuration;
+            matchTimer = currentMatchSetup.MatchTime;
         }
         else if (CurrentState == MatchState.MATCH)
         {
@@ -214,14 +282,17 @@ public class UniverseManager : MonoBehaviour {
             TimeChanged(matchTimer);
 
         if (Input.GetKeyDown(KeyCode.R))
-            ResetState();
+        {
+            ConnectionManager.instance.Disconnect();
+        }  
     }
 
     public void SpawnBall(Vector3 position, Vector2 initialForce = new Vector2(), float torque = 0.0f)
     {
         if (currentBall != null)
-            Destroy(currentBall);
+            DestroyImmediate(currentBall);
         currentBall = Instantiate(ballPrefab, position, Quaternion.identity);
+        currentBall = PhotonNetwork.Instantiate(ballPrefab.name, position, Quaternion.identity, 0);
         currentBall.GetComponent<Rigidbody2D>().AddForce(initialForce, ForceMode2D.Impulse);
         currentBall.GetComponent<Rigidbody2D>().AddTorque(torque, ForceMode2D.Impulse);
         currentBall.GetComponent<SpriteRenderer>().sprite = ballColors[currentBallColor];
@@ -230,7 +301,46 @@ public class UniverseManager : MonoBehaviour {
             currentBall.GetComponent<BallCollisionDetector>().OnCollisionWithSurface += OnBallCollision;
             currentBall.GetComponent<BallCollisionDetector>().OnCollisionWithOutOfField += OnBallOutOfFieldEndGame;
         }
+            
         targetGroup.AddMember(currentBall.transform, 1, CameraFollowRadiusBall);
+    }
+
+    public void HitPlayer(int networkPlayerID, int direction)
+    {
+        Debug.LogFormat("Sent HitPlayer with values: networkPlayerID = {0}, direction = {1}", networkPlayerID, direction);
+        byte evCode = ConnectionManager.PlayerHitPhotonEvent; 
+        object[] content = new object[] { networkPlayerID, direction };
+        RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.Others };
+        SendOptions sendOptions = new SendOptions { Reliability = true };
+        PhotonNetwork.RaiseEvent(evCode, content, raiseEventOptions, sendOptions);
+    }
+
+    public void RequestPickupBall(int networkPlayerID)
+    {
+        Debug.LogFormat("RequestPickupBall: networkPlayerID = {0}, controlledPlayer.networkNumber +1 = {1}", networkPlayerID, controlledPlayer.networkNumber + 1);
+        if (PhotonNetwork.IsMasterClient && controlledPlayer.networkNumber +1 == networkPlayerID)
+        {
+            if (!BallPickedUp)
+            {
+                controlledPlayer.HasBall = true;
+                if (currentBall.gameObject.GetComponent<PhotonView>().IsMine)
+                    PhotonNetwork.Destroy(currentBall);
+                else
+                {
+                    currentBall.gameObject.GetComponent<PhotonView>().TransferOwnership(PhotonNetwork.LocalPlayer);
+                    PhotonNetwork.Destroy(currentBall);
+                }
+            }
+        }
+        else
+        {
+            Debug.LogFormat("Sent RequestPickupBall with values: networkPlayerID = {0}", networkPlayerID);
+            byte evCode = ConnectionManager.RequestBallPickupPhotonEvent;
+            object[] content = new object[] { networkPlayerID };
+            RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.MasterClient };
+            SendOptions sendOptions = new SendOptions { Reliability = true };
+            PhotonNetwork.RaiseEvent(evCode, content, raiseEventOptions, sendOptions);
+        }
     }
 
     void OnBallCollision()
@@ -238,25 +348,34 @@ public class UniverseManager : MonoBehaviour {
         currentBall.GetComponent<BallCollisionDetector>().OnCollisionWithSurface -= OnBallCollision;
         GameInput.instance.SetInputEnabled(false);
         currentBall.GetComponent<BallCollisionDetector>().PickedUp = true;
-        StartCoroutine(EndMatchCor());
+        FireMatchEndedPhotonEvent(2.0);
+        StartCoroutine(EndMatchCor(2.0f));
     }
 
     void OnBallOutOfFieldEndGame()
     {
         currentBall.GetComponent<BallCollisionDetector>().OnCollisionWithOutOfField -= OnBallOutOfFieldEndGame;
         GameInput.instance.SetInputEnabled(false);
+        FireMatchEndedPhotonEvent(0.0);
         EndMatch();
     }
 
-    void OnBallOutOfField()
+    void OnBallOutOfField(Transform throwPoint)
     {
         if (currentState != MatchState.AFTER)
-            ResetPositons();
+        {
+            if (currentBall.GetComponent<PhotonView>().OwnerActorNr == PhotonNetwork.LocalPlayer.ActorNumber)
+            {
+                int side = throwPoint.position.x > 0 ? -1 : 1;
+                StartCoroutine(DelayedActionCoroutine(1.5f, ()=> { SpawnBall(throwPoint.position, new Vector2(350 * side, 200), 50.0f * side); }));
+                StartCoroutine(DelayedActionCoroutine(2.0f, () => { throwBack = false; }));
+            }
+        }
     }
 
-    IEnumerator EndMatchCor()
+    IEnumerator EndMatchCor(float timeToEnd)
     {
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(timeToEnd);
         EndMatch();
     }
 
@@ -272,5 +391,166 @@ public class UniverseManager : MonoBehaviour {
         if (EndOfTheMatch != null)
             EndOfTheMatch(new Vector2Int(score[0] - fouls[0], score[1] - fouls[1]));
         Debug.Log("End of the match!");
+    }
+
+    public void OnEvent(EventData photonEvent)
+    {
+        byte eventCode = photonEvent.Code;
+
+        if (eventCode == ConnectionManager.SendMatchSetupPhotonEvent)
+        {
+            HandleSendMatchSetupPhotonEvent(photonEvent);
+        }
+
+        else if(eventCode == ConnectionManager.PlayerHitPhotonEvent)
+        {
+            HandlePlayerHitPhotonEvent(photonEvent);
+        }
+        else if (eventCode == ConnectionManager.RequestBallPickupPhotonEvent)
+        {
+            HandleRequestBallPickupPhotonEvent(photonEvent);
+        }
+
+        else if (eventCode == ConnectionManager.BallPickedUpPhotonEvent)
+        {
+            HandleBallPickedUpPhotonEvent(photonEvent);
+        }
+        else if (eventCode == ConnectionManager.PointScoredPhotonEvent)
+        {
+            HandlePointScoredPhotonEvent(photonEvent);
+        }
+        else if (eventCode == ConnectionManager.MatchEndedPhotonEvent)
+        {
+            HandleMatchEndedPhotonEvent(photonEvent);
+        }
+        else if (eventCode == ConnectionManager.LevelLoadedPhotonEvent)
+        {
+            HandleLevelLoadedPhotonEvent(photonEvent);
+        }
+    }
+
+    public void HandleSendMatchSetupPhotonEvent(EventData photonEvent)
+    {
+        object[] recievedData = (object[])photonEvent.CustomData;
+
+        currentMatchSetup = new MatchSetup()
+        {
+            BallColorIndex = (int)recievedData[0],
+            CountDownTime = (float)recievedData[1],
+            MatchTime = (float)recievedData[2],
+            MapIndex = (int)recievedData[3],
+            PlayerCount = (int)recievedData[4],
+            PlayerSkinsIndexes = (int[])recievedData[5]
+        };
+        timeToStartMatch = (float)((double)recievedData[6] - PhotonNetwork.Time);
+        Debug.LogErrorFormat("[Multiplayer] match setup recieved form host:\n PlayerCount = {0}\n MapIndex = {1}\n CountDownTime = {2}\n MatchTime = {3}\n BallColorIndex = {4}\n PlayerSkinsIndexes = {5}\n timeToStartMatch = {6}",
+            currentMatchSetup.PlayerCount,
+            currentMatchSetup.MapIndex,
+            currentMatchSetup.CountDownTime,
+            currentMatchSetup.MatchTime,
+            currentMatchSetup.BallColorIndex,
+            currentMatchSetup.PlayerSkinsIndexes,
+            timeToStartMatch);
+        InitGame();
+    }
+
+    public void HandlePlayerHitPhotonEvent(EventData photonEvent)
+    {
+        object[] recievedData = (object[])photonEvent.CustomData;
+        int playerNetworkID = (int)recievedData[0];
+        if (allNetworkPlayers.ContainsKey(playerNetworkID))
+        {
+            Debug.LogFormat("Recieved HitPlayer with values: networkPlayerID = {0}, direction = {1}", playerNetworkID, (int)recievedData[1]);
+            allNetworkPlayers[playerNetworkID].GetHit((int)recievedData[1]);
+        }
+        else
+        {
+            Debug.LogErrorFormat("Couldn't find other player with networkID: {0}", playerNetworkID);
+        }
+    }
+
+    public void HandleRequestBallPickupPhotonEvent(EventData photonEvent)
+    {
+        object[] recievedData = (object[])photonEvent.CustomData;
+        int playerNetworkID = (int)recievedData[0];
+        Debug.LogFormat("Recieved RequestBallPickup with values: networkPlayerID = {0}", playerNetworkID);
+        if (allNetworkPlayers.ContainsKey(playerNetworkID))
+        {
+            if (!BallPickedUp)
+            {
+                Debug.LogFormat("Sent RequestBallPickup with values: networkPlayerID = {0}", playerNetworkID);
+                byte evCode = ConnectionManager.BallPickedUpPhotonEvent;
+                object[] content = new object[] { playerNetworkID };
+                RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.Others };
+                SendOptions sendOptions = new SendOptions { Reliability = true };
+                PhotonNetwork.RaiseEvent(evCode, content, raiseEventOptions, sendOptions);
+                if (currentBall.gameObject.GetComponent<PhotonView>().IsMine)
+                    PhotonNetwork.Destroy(currentBall);
+                else
+                {
+                    currentBall.gameObject.GetComponent<PhotonView>().TransferOwnership(PhotonNetwork.LocalPlayer);
+                    PhotonNetwork.Destroy(currentBall);
+                }
+            }
+        }
+        else
+        {
+            Debug.LogErrorFormat("Couldn't find other player with networkID: {0}", playerNetworkID);
+        }
+    }
+
+    public void HandleBallPickedUpPhotonEvent(EventData photonEvent)
+    {
+        object[] recievedData = (object[])photonEvent.CustomData;
+        int playerNetworkID = (int)recievedData[0];
+        Debug.LogFormat("Recieved BallPickedUp with values: networkPlayerID = {0}", playerNetworkID);
+        if (controlledPlayer.networkNumber + 1 == playerNetworkID)
+        {
+            controlledPlayer.HasBall = true;
+        }
+    }
+
+    public void HandlePointScoredPhotonEvent(EventData photonEvent)
+    {
+        object[] recievedData = (object[])photonEvent.CustomData;
+        int playerNetworkID = (int)recievedData[0];
+        int basketballID = (int)recievedData[1];
+        double timeToReset = (double)recievedData[2] - PhotonNetwork.Time;
+
+        Debug.LogFormat("Recieved PointScored with values: networkPlayerID = {0}, basketballID=  {1}, timeToReset = {2}", playerNetworkID, basketballID, timeToReset);
+
+        score[basketballID]++;
+        FireScoreChanged();
+        currentBall.GetComponent<BallCollisionDetector>().PickedUp = true;
+        StartCoroutine(DelayedActionCoroutine((float)timeToReset, ResetPositons));
+    }
+
+    public void HandleMatchEndedPhotonEvent(EventData photonEvent)
+    {
+        object[] recievedData = (object[])photonEvent.CustomData;
+        double timeToEnd = (double)recievedData[0] - PhotonNetwork.Time;
+
+        GameInput.instance.SetInputEnabled(false);
+        currentBall.GetComponent<BallCollisionDetector>().PickedUp = true;
+
+        if (timeToEnd < 0)
+        {
+            EndMatch(); 
+        }
+        else
+        {
+            StartCoroutine(EndMatchCor((float)timeToEnd));
+        }
+    }
+
+    public void HandleLevelLoadedPhotonEvent(EventData photonEvent)
+    {
+        object[] recievedData = (object[])photonEvent.CustomData;
+        int playerNetworkID = (int)recievedData[0];
+
+        if (playerNetworkID != PhotonNetwork.LocalPlayer.ActorNumber)
+        {
+            FireSendMatchSetupPhotonEvent();
+        }
     }
 }

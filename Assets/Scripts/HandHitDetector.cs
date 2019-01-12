@@ -9,7 +9,8 @@ public class HandHitDetector : MonoBehaviour {
         TSDUPlayer player = collision.gameObject.GetComponent<TSDUPlayer>();
         if (player != null)
         {
-            player.GetHit(Mathf.RoundToInt(gameObject.transform.localScale.x));
+            //player.GetHit(Mathf.RoundToInt(gameObject.transform.localScale.x));
+            UniverseManager.instance.HitPlayer((int)player.networkNumber + 1, Mathf.RoundToInt(gameObject.transform.parent.localScale.x));
         }
     }
 }

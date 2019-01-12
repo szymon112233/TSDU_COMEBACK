@@ -1,8 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Photon.Pun;
 using UnityEngine;
 
-public class TSDUPlayer : MonoBehaviour {
+public class TSDUPlayer : MonoBehaviourPunCallbacks, IPunObservable {
 
     public System.Action BallThrown;
 
@@ -18,10 +19,12 @@ public class TSDUPlayer : MonoBehaviour {
     public GameObject handHitAirCollider;
     public Animator animator;
     public GameObject ballPosition;
+    public PhotonView m_photonView;
     public UnityEngine.UI.Image powerBar;
 
     [Header("Data")]
-    public uint number = 0;
+    public uint networkNumber = 0;
+    public uint localNumber = 0;
 
     [Header("Movement")]
     public float movementSpeed = 10.0f;
@@ -49,10 +52,17 @@ public class TSDUPlayer : MonoBehaviour {
 
     private bool hitting = false;
 
+    [Header("Network")]
+    public float networkHorizontal;
+    private Vector2 networkPosition;
+    public int UpdatePosAndRotRate = 8;
+    private int updatesLeft = 0;
+    private bool shouldupdate = true;
+
     private IEnumerator EnableBallPickupCoroutineREF;
     private IEnumerator DisableHitStateCoroutineREF;
 
-    private bool HasBall
+    public bool HasBall
     {
         get
         {
@@ -128,12 +138,19 @@ public class TSDUPlayer : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        ballDetector.GetComponent<BallDetetor>().balldetected += () => { HasBall = true; };
+        Debug.LogFormat("my photonView.OwnerActorNr = {0}", photonView.OwnerActorNr);
+        networkNumber = (uint)photonView.OwnerActorNr - 1;
+
+        UniverseManager.instance.allNetworkPlayers.Add(photonView.OwnerActorNr, this);
+
+       //ballDetector.GetComponent<BallDetetor>().balldetected += () => { HasBall = true; };
 	}
 	
 	// Update is called once per frame
 	void Update () {
-        UpdateAction();
+
+        if (photonView.IsMine)
+            UpdateAction();
     }
 
     public void ResetState()
@@ -167,15 +184,17 @@ public class TSDUPlayer : MonoBehaviour {
         }
     }
 
-
     private void FixedUpdate()
     {
-        UpdateMovement();
+        if (m_photonView.IsMine)
+            UpdateMovement();
+        else
+            UpdateMovementNetwork();
     }
 
     private void UpdateMovement()
     {
-        float horizontal = GameInput.instance.GetAxis(GameAxis.X_MOVEMENT, (int)number);
+        float horizontal = GameInput.instance.GetAxis(GameAxis.X_MOVEMENT, (int)localNumber);
         Vector2 moveVector = new Vector2();
         if (horizontal != 0 && !Hitting && !Throwing)
         {
@@ -200,7 +219,7 @@ public class TSDUPlayer : MonoBehaviour {
         if (Jumping)
         {
             moveVector.y = jumpMomentum * Time.deltaTime;
-            if(GameInput.instance.GetButton(GameButtons.JUMP, (int)number) && jumpFrames < maxJumpTimeFrames)
+            if(GameInput.instance.GetButton(GameButtons.JUMP, (int)localNumber) && jumpFrames < maxJumpTimeFrames)
             {
                 jumpFrames++;
             }
@@ -211,15 +230,29 @@ public class TSDUPlayer : MonoBehaviour {
 
             
         }
-        if (!Jumping && GameInput.instance.GetButton(GameButtons.JUMP, (int)number))
+        if (!Jumping && GameInput.instance.GetButton(GameButtons.JUMP, (int)localNumber))
         {
             Jumping = true;
             jumpFrames++;
             jumpMomentum = jumpForce;
-            //Vector2 forceVector = new Vector2(0.0f, jumpForce);
-            //rigibdoy.AddForce(forceVector);
         }
         rigibdoy.MovePosition(rigibdoy.position + moveVector);
+
+    }
+
+    private void UpdateMovementNetwork()
+    {
+        Vector2 moveVector = new Vector2();
+        moveVector.x = networkHorizontal * movementSpeed * Time.deltaTime;
+
+        rigibdoy.MovePosition(rigibdoy.position + moveVector);
+
+        if (shouldupdate)
+        {
+            shouldupdate = false;
+            
+        }
+        this.rigibdoy.position = Vector3.Lerp(rigibdoy.position, networkPosition, 0.1f);
 
     }
 
@@ -227,14 +260,14 @@ public class TSDUPlayer : MonoBehaviour {
     {
         if (HasBall)
         {
-            if (GameInput.instance.GetButtonPressed(GameButtons.ACTION, (int)number))
+            if (GameInput.instance.GetButtonPressed(GameButtons.ACTION, (int)localNumber))
             {
                 powerBar.fillAmount = 0;
                 powerBar.gameObject.SetActive(true);
                 animator.ResetTrigger("BallThrown");
                 Throwing = true;
             }
-            else if (GameInput.instance.GetButton(GameButtons.ACTION, (int)number))
+            else if (GameInput.instance.GetButton(GameButtons.ACTION, (int)localNumber))
             {
                 throwForce.x = throwForceCurveX.Evaluate(lerpTimer / lerpTime * 100.0f);
                 throwForce.y = throwForceCurveY.Evaluate(lerpTimer / lerpTime * 100.0f);
@@ -254,7 +287,7 @@ public class TSDUPlayer : MonoBehaviour {
                 }
 
             }
-            else if (GameInput.instance.GetButtonReleased(GameButtons.ACTION, (int)number))
+            else if (GameInput.instance.GetButtonReleased(GameButtons.ACTION, (int)localNumber))
             {
                 powerBar.gameObject.SetActive(false);
                 Throwing = false;
@@ -263,7 +296,7 @@ public class TSDUPlayer : MonoBehaviour {
         }
         else
         {
-            if (GameInput.instance.GetButtonPressed(GameButtons.ACTION, (int)number) && !Hitting)
+            if (GameInput.instance.GetButtonPressed(GameButtons.ACTION, (int)localNumber) && !Hitting)
             {
                 if (Jumping)
                 {
@@ -309,7 +342,7 @@ public class TSDUPlayer : MonoBehaviour {
 
     IEnumerator EnableBallPickupCoroutine()
     {
-        yield return new WaitForSeconds(0.25f);
+        yield return new WaitForSeconds(0.5f);
         ballDetector.SetActive(true);
     }
 
@@ -329,11 +362,37 @@ public class TSDUPlayer : MonoBehaviour {
         {
             if (hasBall && jumpedWithBall)
             {
-                UniverseManager.instance.fouls[number]++;
+                //UniverseManager.instance.fouls[number]++;
                 UniverseManager.instance.FireFoulsChanged();
             }
             Jumping = false;
             jumpFrames = 0;
+        }
+    }
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            stream.SendNext(rigibdoy.position);
+            stream.SendNext(Flip);
+
+            stream.SendNext(GameInput.instance.GetAxis(GameAxis.X_MOVEMENT, (int)localNumber));
+        }
+        else
+        {
+            if (updatesLeft > 0)
+                updatesLeft--;
+            else
+            {
+                shouldupdate = true;
+                updatesLeft = UpdatePosAndRotRate;
+
+            }
+
+            networkPosition = (Vector2)stream.ReceiveNext();
+            transform.localScale = new Vector3((int)stream.ReceiveNext(), transform.localScale.y, transform.localScale.z);
+            networkHorizontal = (float)stream.ReceiveNext();
         }
     }
 }

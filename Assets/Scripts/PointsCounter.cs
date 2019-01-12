@@ -5,7 +5,6 @@ using UnityEngine;
 
 public class PointsCounter : MonoBehaviour {
 
-
     public System.Action PointScored;
     bool scorable = true;
 
@@ -16,7 +15,6 @@ public class PointsCounter : MonoBehaviour {
             scorable = false;
             if (PointScored != null)
                 PointScored();
-            Debug.Log("SCOREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
         }
     }
 
