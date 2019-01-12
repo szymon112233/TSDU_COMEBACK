@@ -32,24 +32,24 @@ public class BallNetworkSync : MonoBehaviour, IPunObservable, IPunInstantiateMag
 
     public void FixedUpdate()
     {
-        if (updatesLeft > 0)
-            updatesLeft--;
-        else
+        if (GameState.Instance.isMultiplayer)
         {
-            shouldupdate = true;
-            updatesLeft = UpdatePosAndRotRate;
-
-            if (!this.m_PhotonView.IsMine && shouldupdate)
+            if (updatesLeft > 0)
+                updatesLeft--;
+            else
             {
-                this.m_Body.rotation = this.m_NetworkRotation;
+                shouldupdate = true;
+                updatesLeft = UpdatePosAndRotRate;
 
-                m_Body.position = Vector2.Lerp(m_Body.position, m_NetworkPosition, 0.1f);
-                shouldupdate = false;
+                if (!this.m_PhotonView.IsMine && shouldupdate)
+                {
+                    this.m_Body.rotation = this.m_NetworkRotation;
+
+                    m_Body.position = Vector2.Lerp(m_Body.position, m_NetworkPosition, 0.1f);
+                    shouldupdate = false;
+                }
             }
         }
-
-        
-       
     }
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)

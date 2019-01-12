@@ -9,12 +9,22 @@ public class BallDetetor : MonoBehaviour {
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        Debug.LogFormat("BallDetetor, OnTriggerEnter2D: {0} ", collision.gameObject != null && !collision.gameObject.GetComponent<BallCollisionDetector>().PickedUp && myPlayer.networkNumber + 1 == PhotonNetwork.LocalPlayer.ActorNumber);
-        if (collision.gameObject != null && !collision.gameObject.GetComponent<BallCollisionDetector>().PickedUp && myPlayer.networkNumber + 1 == PhotonNetwork.LocalPlayer.ActorNumber)
+        if (GameState.Instance.isMultiplayer)
         {
-            collision.gameObject.GetComponent<BallCollisionDetector>().PickedUp = true;
-            UniverseManager.instance.RequestPickupBall((int)myPlayer.networkNumber + 1);       
+            Debug.LogFormat("BallDetetor, OnTriggerEnter2D: {0} ", collision.gameObject != null && !collision.gameObject.GetComponent<BallCollisionDetector>().PickedUp && myPlayer.number + 1 == PhotonNetwork.LocalPlayer.ActorNumber);
+            if (collision.gameObject != null && !collision.gameObject.GetComponent<BallCollisionDetector>().PickedUp && myPlayer.number + 1 == PhotonNetwork.LocalPlayer.ActorNumber)
+            {
+                collision.gameObject.GetComponent<BallCollisionDetector>().PickedUp = true;
+                UniverseManager.instance.RequestPickupBall((int)myPlayer.number + 1);
+            }
         }
-        
+        else
+        {
+            if (collision.gameObject != null && !collision.gameObject.GetComponent<BallCollisionDetector>().PickedUp)
+            {
+                collision.gameObject.GetComponent<BallCollisionDetector>().PickedUp = true;
+                UniverseManager.instance.RequestPickupBall((int)myPlayer.number + 1);
+            }
+        }
     }
 }

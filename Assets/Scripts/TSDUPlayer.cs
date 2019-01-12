@@ -23,8 +23,8 @@ public class TSDUPlayer : MonoBehaviourPunCallbacks, IPunObservable {
     public UnityEngine.UI.Image powerBar;
 
     [Header("Data")]
-    public uint networkNumber = 0;
-    public uint localNumber = 0;
+    public uint number = 0;
+    public uint localInputDeviceNumber = 0;
 
     [Header("Movement")]
     public float movementSpeed = 10.0f;
@@ -138,18 +138,24 @@ public class TSDUPlayer : MonoBehaviourPunCallbacks, IPunObservable {
 
     // Use this for initialization
     void Start () {
-        Debug.LogFormat("my photonView.OwnerActorNr = {0}", photonView.OwnerActorNr);
-        networkNumber = (uint)photonView.OwnerActorNr - 1;
 
-        UniverseManager.instance.allNetworkPlayers.Add(photonView.OwnerActorNr, this);
+        if (GameState.Instance.isMultiplayer)
+        {
+            Debug.LogFormat("my photonView.OwnerActorNr = {0}", photonView.OwnerActorNr);
+            number = (uint)photonView.OwnerActorNr - 1;
+        }
+        else
+        {
+            number = localInputDeviceNumber;
+        }
 
-       //ballDetector.GetComponent<BallDetetor>().balldetected += () => { HasBall = true; };
+        UniverseManager.instance.RegisterPlayer((int)number + 1, this );
 	}
 	
 	// Update is called once per frame
 	void Update () {
 
-        if (photonView.IsMine)
+        if (!GameState.Instance.isMultiplayer || photonView.IsMine)
             UpdateAction();
     }
 
@@ -186,15 +192,15 @@ public class TSDUPlayer : MonoBehaviourPunCallbacks, IPunObservable {
 
     private void FixedUpdate()
     {
-        if (m_photonView.IsMine)
-            UpdateMovement();
-        else
+        if (GameState.Instance.isMultiplayer &&  !m_photonView.IsMine)
             UpdateMovementNetwork();
+        else
+            UpdateMovement();
     }
 
     private void UpdateMovement()
     {
-        float horizontal = GameInput.instance.GetAxis(GameAxis.X_MOVEMENT, (int)localNumber);
+        float horizontal = GameInput.instance.GetAxis(GameAxis.X_MOVEMENT, (int)localInputDeviceNumber);
         Vector2 moveVector = new Vector2();
         if (horizontal != 0 && !Hitting && !Throwing)
         {
@@ -219,7 +225,7 @@ public class TSDUPlayer : MonoBehaviourPunCallbacks, IPunObservable {
         if (Jumping)
         {
             moveVector.y = jumpMomentum * Time.deltaTime;
-            if(GameInput.instance.GetButton(GameButtons.JUMP, (int)localNumber) && jumpFrames < maxJumpTimeFrames)
+            if(GameInput.instance.GetButton(GameButtons.JUMP, (int)localInputDeviceNumber) && jumpFrames < maxJumpTimeFrames)
             {
                 jumpFrames++;
             }
@@ -230,7 +236,7 @@ public class TSDUPlayer : MonoBehaviourPunCallbacks, IPunObservable {
 
             
         }
-        if (!Jumping && GameInput.instance.GetButton(GameButtons.JUMP, (int)localNumber))
+        if (!Jumping && GameInput.instance.GetButton(GameButtons.JUMP, (int)localInputDeviceNumber))
         {
             Jumping = true;
             jumpFrames++;
@@ -260,14 +266,14 @@ public class TSDUPlayer : MonoBehaviourPunCallbacks, IPunObservable {
     {
         if (HasBall)
         {
-            if (GameInput.instance.GetButtonPressed(GameButtons.ACTION, (int)localNumber))
+            if (GameInput.instance.GetButtonPressed(GameButtons.ACTION, (int)localInputDeviceNumber))
             {
                 powerBar.fillAmount = 0;
                 powerBar.gameObject.SetActive(true);
                 animator.ResetTrigger("BallThrown");
                 Throwing = true;
             }
-            else if (GameInput.instance.GetButton(GameButtons.ACTION, (int)localNumber))
+            else if (GameInput.instance.GetButton(GameButtons.ACTION, (int)localInputDeviceNumber))
             {
                 throwForce.x = throwForceCurveX.Evaluate(lerpTimer / lerpTime * 100.0f);
                 throwForce.y = throwForceCurveY.Evaluate(lerpTimer / lerpTime * 100.0f);
@@ -287,7 +293,7 @@ public class TSDUPlayer : MonoBehaviourPunCallbacks, IPunObservable {
                 }
 
             }
-            else if (GameInput.instance.GetButtonReleased(GameButtons.ACTION, (int)localNumber))
+            else if (GameInput.instance.GetButtonReleased(GameButtons.ACTION, (int)localInputDeviceNumber))
             {
                 powerBar.gameObject.SetActive(false);
                 Throwing = false;
@@ -296,7 +302,7 @@ public class TSDUPlayer : MonoBehaviourPunCallbacks, IPunObservable {
         }
         else
         {
-            if (GameInput.instance.GetButtonPressed(GameButtons.ACTION, (int)localNumber) && !Hitting)
+            if (GameInput.instance.GetButtonPressed(GameButtons.ACTION, (int)localInputDeviceNumber) && !Hitting)
             {
                 if (Jumping)
                 {
@@ -362,7 +368,7 @@ public class TSDUPlayer : MonoBehaviourPunCallbacks, IPunObservable {
         {
             if (hasBall && jumpedWithBall)
             {
-                //UniverseManager.instance.fouls[number]++;
+                UniverseManager.instance.fouls[number]++;
                 UniverseManager.instance.FireFoulsChanged();
             }
             Jumping = false;
@@ -377,7 +383,7 @@ public class TSDUPlayer : MonoBehaviourPunCallbacks, IPunObservable {
             stream.SendNext(rigibdoy.position);
             stream.SendNext(Flip);
 
-            stream.SendNext(GameInput.instance.GetAxis(GameAxis.X_MOVEMENT, (int)localNumber));
+            stream.SendNext(GameInput.instance.GetAxis(GameAxis.X_MOVEMENT, (int)localInputDeviceNumber));
         }
         else
         {

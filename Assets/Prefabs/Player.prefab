@@ -250,7 +250,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1854674518523520}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 19.9, y: 40.03, z: 0}
+  m_LocalPosition: {x: -6.9, y: -10.9, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4900459973592864}
@@ -660,8 +660,8 @@ MonoBehaviour:
   ballPosition: {fileID: 1854674518523520}
   m_photonView: {fileID: 114609037228265054}
   powerBar: {fileID: 114058585284090250}
-  networkNumber: 0
-  localNumber: 0
+  number: 0
+  localInputDeviceNumber: 0
   movementSpeed: 300
   jumpForce: 200
   jumpMomentum: -290

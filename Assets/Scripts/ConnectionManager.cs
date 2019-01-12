@@ -3,17 +3,6 @@ using Photon.Pun;
 using Photon.Realtime;
 using ExitGames.Client.Photon;
 
-[System.Serializable]
-public struct MatchSetup
-{
-    public float MatchTime;
-    public float CountDownTime;
-    public int MapIndex;
-    public int BallColorIndex;
-    public int PlayerCount;
-    public int[] PlayerSkinsIndexes;
-}
-
 public class ConnectionManager : MonoBehaviourPunCallbacks
 {
     public PrefabsNetworkPool prefabPool;
@@ -73,7 +62,7 @@ public class ConnectionManager : MonoBehaviourPunCallbacks
 
     private void SceneManager_sceneLoaded(UnityEngine.SceneManagement.Scene scene, UnityEngine.SceneManagement.LoadSceneMode arg1)
     {
-        if (scene.buildIndex == 1 && !PhotonNetwork.IsMasterClient)
+        if (scene.name.Contains("COURT") && !PhotonNetwork.IsMasterClient)
         {
             int networkPlayerID = PhotonNetwork.LocalPlayer.ActorNumber;
             Debug.LogFormat("Sent LevelLoaded with values: networkPlayerID = {0}", networkPlayerID);
@@ -142,7 +131,8 @@ public class ConnectionManager : MonoBehaviourPunCallbacks
     public override void OnDisconnected(DisconnectCause cause)
     {
         Debug.LogWarningFormat("PUN Basics Tutorial/Launcher: OnDisconnected() was called by PUN with reason {0}", cause);
-        UnityEngine.SceneManagement.SceneManager.LoadScene(0);
+        if (UnityEngine.SceneManagement.SceneManager.GetActiveScene().name.Contains("COURT"))
+            UnityEngine.SceneManagement.SceneManager.LoadScene(0);
     }
 
     public override void OnJoinRandomFailed(short returnCode, string message)
@@ -173,6 +163,6 @@ public class ConnectionManager : MonoBehaviourPunCallbacks
         if (PlayerEnteredRoom != null)
             PlayerEnteredRoom(PhotonNetwork.CurrentRoom.PlayerCount);
         if (PhotonNetwork.CurrentRoom.MaxPlayers == PhotonNetwork.CurrentRoom.PlayerCount)
-            PhotonNetwork.LoadLevel(1);
+            PhotonNetwork.LoadLevel("COURT_1");
     }
 }

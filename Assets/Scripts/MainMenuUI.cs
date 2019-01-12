@@ -6,17 +6,19 @@ public class MainMenuUI : MonoBehaviour {
 
     public void StartSinglePlayer()
     {
-        UnityEngine.SceneManagement.SceneManager.LoadScene(1);
+        GameState.Instance.isMultiplayer = false;
+        UnityEngine.SceneManagement.SceneManager.LoadScene("COURT_1");
     }
 
     public void StartMultiPlayer()
     {
-
+        GameState.Instance.isMultiplayer = true;
+        UnityEngine.SceneManagement.SceneManager.LoadScene("MultiplayerJoin");
     }
 
     public void ShowCredits()
     {
-
+        
     }
 
     public void ExitGame()
