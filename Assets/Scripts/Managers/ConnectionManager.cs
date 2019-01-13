@@ -8,17 +8,27 @@ public class ConnectionManager : MonoBehaviourPunCallbacks
     public PrefabsNetworkPool prefabPool;
 
     public static System.Action RoomJoined;
+    public static System.Action RoomJoinedLastPlayer;
     public static System.Action RoomCreated;
     public static System.Action<int> PlayerEnteredRoom;
     public static System.Action<string> ConnectionStatusUpdated;
 
+    //Game Sate changes
     public static readonly byte SendMatchSetupPhotonEvent = 0;
+    public static readonly byte MatchEndedPhotonEvent = 5;
+    public static readonly byte LevelLoadedPhotonEvent = 6;
+    //Gameplay logic events
     public static readonly byte PlayerHitPhotonEvent = 1;
     public static readonly byte RequestBallPickupPhotonEvent = 2;
     public static readonly byte BallPickedUpPhotonEvent = 3;
     public static readonly byte PointScoredPhotonEvent = 4;
-    public static readonly byte MatchEndedPhotonEvent = 5;
-    public static readonly byte LevelLoadedPhotonEvent = 6;
+    //Match setup
+    public static readonly byte MatchSetupTimeChangedPhotonEvent = 7;
+    public static readonly byte MatchSetupBallChangedPhotonEvent = 8;
+    public static readonly byte MatchSetupMapChangedPhotonEvent = 9;
+    public static readonly byte MatchSetupPlayerChangedPhotonEvent = 10;
+    public static readonly byte MatchSetupPlayerReadyPhotonEvent = 11;
+    public static readonly byte MatchSetupStartMatchPhotonEvent = 12;
 
     #region singleton
     public static ConnectionManager instance = null;
@@ -150,6 +160,10 @@ public class ConnectionManager : MonoBehaviourPunCallbacks
         Debug.Log("PUN Basics Tutorial/Launcher: OnJoinedRoom() called by PUN. Now this client is in a room.");
         if (RoomJoined != null)
             RoomJoined();
+
+        if (PhotonNetwork.CurrentRoom.MaxPlayers == PhotonNetwork.CurrentRoom.PlayerCount)
+            if (RoomJoinedLastPlayer != null)
+                RoomJoinedLastPlayer();
     }
 
     public override void OnCreatedRoom()
@@ -163,6 +177,7 @@ public class ConnectionManager : MonoBehaviourPunCallbacks
         if (PlayerEnteredRoom != null)
             PlayerEnteredRoom(PhotonNetwork.CurrentRoom.PlayerCount);
         if (PhotonNetwork.CurrentRoom.MaxPlayers == PhotonNetwork.CurrentRoom.PlayerCount)
-            PhotonNetwork.LoadLevel("COURT_1");
+            if (RoomJoinedLastPlayer != null)
+                RoomJoinedLastPlayer();
     }
 }
