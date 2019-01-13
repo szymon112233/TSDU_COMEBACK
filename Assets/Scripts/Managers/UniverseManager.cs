@@ -115,7 +115,7 @@ public class UniverseManager : MonoBehaviour, IOnEventCallback
     void Init()
     {
         allPlayers = new Dictionary<int, TSDUPlayer>();
-        currentMatchSetup = GameState.Instance.defaultGameData.defaultSetup;
+        currentMatchSetup = GameState.Instance.currentMatchSetup;
         presets = GameState.Instance.defaultGameData.presets;
         ballColors = GameState.Instance.defaultGameData.balls;
 

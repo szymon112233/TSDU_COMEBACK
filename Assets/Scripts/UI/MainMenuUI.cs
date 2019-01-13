@@ -4,10 +4,12 @@ using UnityEngine;
 
 public class MainMenuUI : MonoBehaviour {
 
+    public MatchSetupUI matchSetup;
+
     public void StartSinglePlayer()
     {
         GameState.Instance.isMultiplayer = false;
-        UnityEngine.SceneManagement.SceneManager.LoadScene("COURT_1");
+        matchSetup.Show();
     }
 
     public void StartMultiPlayer()

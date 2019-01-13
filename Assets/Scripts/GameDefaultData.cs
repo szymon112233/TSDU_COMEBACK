@@ -11,4 +11,6 @@ public class GameDefaultData : ScriptableObject
     public Sprite[] balls;
 
     public PlayerColors[] presets;
+
+    public Court[] courts;
 }

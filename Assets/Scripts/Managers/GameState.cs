@@ -14,6 +14,13 @@ public struct MatchSetup
     public int[] PlayerSkinsIndexes;
 }
 
+[System.Serializable]
+public struct Court
+{
+    public string SceneName;
+    public Sprite miniPreviewSprite;
+}
+
 public class GameState : MonoBehaviour {
 
     #region singleton
@@ -54,10 +61,12 @@ public class GameState : MonoBehaviour {
 
     public bool isMultiplayer;
     public GameDefaultData defaultGameData;
+    public MatchSetup currentMatchSetup;
 
 
     void Init()
     {
         isMultiplayer = false;
+        currentMatchSetup = defaultGameData.defaultSetup;
     }
 }

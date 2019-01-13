@@ -27,7 +27,7 @@ public class BallSpawnerMenu : MonoBehaviour {
 
         for (int i = 0; i < ballsPool.Length; i++)
         {
-            ballsPool[i] = Instantiate(ballPrefab);
+            ballsPool[i] = Instantiate(ballPrefab, transform);
             ballsPool[i].SetActive(false);
         }
     }
