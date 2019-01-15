@@ -241,6 +241,11 @@ public class MatchSetupUI : MonoBehaviour, IOnEventCallback
         }
         else
         {
+            GameState.Instance.currentMatchSetup.BallColorIndex = currentBallIndex;
+            GameState.Instance.currentMatchSetup.MapIndex = currentMapIndex;
+            GameState.Instance.currentMatchSetup.MatchTime = currentMatchTime;
+            GameState.Instance.currentMatchSetup.PlayerCount = 2;
+            GameState.Instance.currentMatchSetup.PlayerSkinsIndexes = new int[] { currentRedPlayerPresetIndex, currentBluePlayerPresetIndex };
             UnityEngine.SceneManagement.SceneManager.LoadScene(GameState.Instance.defaultGameData.courts[GameState.Instance.currentMatchSetup.MapIndex].SceneName);
         }
     }

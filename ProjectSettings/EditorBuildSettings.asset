@@ -14,4 +14,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/COURT_1.unity
     guid: 4bc3893fca41913479d23b4b37c96d15
+  - enabled: 1
+    path: Assets/Scenes/COURT_2.unity
+    guid: 9b60536ae7496264296fd5846038397a
   m_configObjects: {}
