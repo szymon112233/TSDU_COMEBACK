@@ -37,6 +37,10 @@ public class MultiplayerGUI : MonoBehaviour {
         {
             ShowMainPanel();
         }
+        else
+        {
+            UnityEngine.SceneManagement.SceneManager.LoadScene(0);
+        }
     }
 
     public void ChooseRandom()
