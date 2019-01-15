@@ -11,7 +11,9 @@ public class ConnectionManager : MonoBehaviourPunCallbacks
     public static System.Action RoomJoinedLastPlayer;
     public static System.Action RoomCreated;
     public static System.Action<int> PlayerEnteredRoom;
+    public static System.Action PlayerLeftRoom;
     public static System.Action<string> ConnectionStatusUpdated;
+    public static System.Action<string> Disconnected;
 
     //Game Sate changes
     public static readonly byte SendMatchSetupPhotonEvent = 0;
@@ -123,6 +125,8 @@ public class ConnectionManager : MonoBehaviourPunCallbacks
         // #Critical, we must first and foremost connect to Photon Online Server.
         PhotonNetwork.GameVersion = gameVersion;
         PhotonNetwork.ConnectUsingSettings();
+        if (ConnectionStatusUpdated != null)
+            ConnectionStatusUpdated("Connecting to master server...");
     }
 
     public override void OnConnectedToMaster()
@@ -133,14 +137,28 @@ public class ConnectionManager : MonoBehaviourPunCallbacks
         roomOptions.IsVisible = false;
 
         if (randomRoom)
+        {
             PhotonNetwork.JoinRandomRoom();
+            if (ConnectionStatusUpdated != null)
+                ConnectionStatusUpdated("Connected to master server! Looking for a room to join...");
+        }
+            
         else
+        {
             PhotonNetwork.JoinOrCreateRoom(secretPhase, roomOptions, TypedLobby.Default);
+            if (ConnectionStatusUpdated != null)
+                ConnectionStatusUpdated("Connected to master server! Looking for a room to join...");
+        }
+            
     }
 
     public override void OnDisconnected(DisconnectCause cause)
     {
         Debug.LogWarningFormat("PUN Basics Tutorial/Launcher: OnDisconnected() was called by PUN with reason {0}", cause);
+        if (ConnectionStatusUpdated != null)
+            ConnectionStatusUpdated("Disconnected! Reason: " + cause);
+        if (Disconnected != null)
+            Disconnected(cause.ToString());
         if (UnityEngine.SceneManagement.SceneManager.GetActiveScene().name.Contains("COURT"))
             UnityEngine.SceneManagement.SceneManager.LoadScene(0);
     }
@@ -148,6 +166,8 @@ public class ConnectionManager : MonoBehaviourPunCallbacks
     public override void OnJoinRandomFailed(short returnCode, string message)
     {
         Debug.LogFormat("PUN Basics Tutorial/Launcher:OnJoinRandomFailed() was called by PUN. Error Code: {0}, Message: {1}", returnCode, message);
+        if (ConnectionStatusUpdated != null)
+            ConnectionStatusUpdated("Can't find any room, creating a new one...");
 
         // #Critical: we failed to join a random room, maybe none exists or they are all full. No worries, we create a new room.
         roomOptions.MaxPlayers = 2;
@@ -158,6 +178,8 @@ public class ConnectionManager : MonoBehaviourPunCallbacks
     public override void OnJoinedRoom()
     {
         Debug.Log("PUN Basics Tutorial/Launcher: OnJoinedRoom() called by PUN. Now this client is in a room.");
+        //if (ConnectionStatusUpdated != null)
+        //    ConnectionStatusUpdated("Room found! Waiting for other player...");
         if (RoomJoined != null)
             RoomJoined();
 
@@ -166,14 +188,28 @@ public class ConnectionManager : MonoBehaviourPunCallbacks
                 RoomJoinedLastPlayer();
     }
 
+    public override void OnPlayerLeftRoom(Player otherPlayer)
+    {
+        Debug.Log("OnPlayerDisconnected");
+        if (ConnectionStatusUpdated != null)
+            ConnectionStatusUpdated("Player " + otherPlayer.NickName+ " disconnected, sorry :(");
+
+        if (PlayerLeftRoom != null)
+            PlayerLeftRoom();
+    }
+
     public override void OnCreatedRoom()
     {
+        if (ConnectionStatusUpdated != null)
+            ConnectionStatusUpdated("Room created! Waiting for other player...");
         if (RoomCreated != null)
             RoomCreated();
     }
 
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
+        if (ConnectionStatusUpdated != null)
+            ConnectionStatusUpdated("Player " + newPlayer.NickName + " joined, starting match setup!");
         if (PlayerEnteredRoom != null)
             PlayerEnteredRoom(PhotonNetwork.CurrentRoom.PlayerCount);
         if (PhotonNetwork.CurrentRoom.MaxPlayers == PhotonNetwork.CurrentRoom.PlayerCount)

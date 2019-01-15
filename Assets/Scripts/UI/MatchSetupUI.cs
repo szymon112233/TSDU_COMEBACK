@@ -47,12 +47,14 @@ public class MatchSetupUI : MonoBehaviour, IOnEventCallback
     private void Awake()
     {
         ConnectionManager.RoomJoinedLastPlayer += Show;
+        ConnectionManager.PlayerLeftRoom += Hide;
         Hide();
     }
 
     private void OnDestroy()
     {
         ConnectionManager.RoomJoinedLastPlayer -= Show;
+        ConnectionManager.PlayerLeftRoom -= Hide;
     }
 
     void Start () {

@@ -21,6 +21,9 @@ public class MultiplayerGUI : MonoBehaviour {
     {
         ShowMainPanel();
         ConnectionManager.ConnectionStatusUpdated += OnConnectionStatusUpdated;
+        ConnectionManager.RoomJoinedLastPlayer += OnRoomJoinedLastPlayer;
+        ConnectionManager.PlayerLeftRoom += OnPlayerLeftRoom;
+        ConnectionManager.Disconnected += OnDisconnect;
     }
 
     public void OnBackClicked()
@@ -94,8 +97,34 @@ public class MultiplayerGUI : MonoBehaviour {
         infoText.text = value;
     }
 
+    private void OnRoomJoinedLastPlayer()
+    {
+        loadingPanel.SetActive(false);
+    }
+
+    private void OnPlayerLeftRoom()
+    {
+        ConnectionManager.instance.Disconnect();
+        if (mode == 0)
+            ShowMainPanel();
+        else
+            ShowPasswordPanel();
+    }
+
+    private void OnDisconnect(string cause)
+    {
+        ConnectionManager.instance.Disconnect();
+        if (mode == 0)
+            ShowMainPanel();
+        else
+            ShowPasswordPanel();
+    }
+
     private void OnDestroy()
     {
         ConnectionManager.ConnectionStatusUpdated -= OnConnectionStatusUpdated;
+        ConnectionManager.RoomJoinedLastPlayer -= OnRoomJoinedLastPlayer;
+        ConnectionManager.PlayerLeftRoom -= OnPlayerLeftRoom;
+        ConnectionManager.Disconnected -= OnDisconnect;
     }
 }
