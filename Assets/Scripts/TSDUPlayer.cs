@@ -368,8 +368,7 @@ public class TSDUPlayer : MonoBehaviourPunCallbacks, IPunObservable {
         {
             if (hasBall && jumpedWithBall)
             {
-                UniverseManager.instance.fouls[number]++;
-                UniverseManager.instance.FireFoulsChanged();
+                UniverseManager.instance.DoneFoul((int)number);
             }
             Jumping = false;
             jumpFrames = 0;

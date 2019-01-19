@@ -344,6 +344,14 @@ public class UniverseManager : MonoBehaviour, IOnEventCallback
         targetGroup.AddMember(currentBall.transform, 1, CameraFollowRadiusBall);
     }
 
+    public void DoneFoul(int number)
+    {
+        fouls[number]++;
+        FireFoulsChanged();
+        if (GameState.Instance.isMultiplayer)
+            FireDoneFoulPhotonEvent(number);
+    }
+
     public void HitPlayer(int playerID, int direction)
     {
         if (GameState.Instance.isMultiplayer)
@@ -507,6 +515,10 @@ public class UniverseManager : MonoBehaviour, IOnEventCallback
         {
             HandleLevelLoadedPhotonEvent(photonEvent);
         }
+        else if (eventCode == ConnectionManager.DoneFoulPhotonEvent)
+        {
+            HandleDoneFoulPhotonEvent(photonEvent);
+        }
     }
 
     private void FirePointScoredPhotonEvent(int basketID)
@@ -517,6 +529,18 @@ public class UniverseManager : MonoBehaviour, IOnEventCallback
         SendOptions sendOptions = new SendOptions { Reliability = true };
         PhotonNetwork.RaiseEvent(evCode, content, raiseEventOptions, sendOptions);
     }
+
+    private void FireDoneFoulPhotonEvent(int playerNumber)
+    {
+        byte evCode = ConnectionManager.DoneFoulPhotonEvent;
+        object[] content = new object[] { playerNumber };
+        RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.Others };
+        SendOptions sendOptions = new SendOptions { Reliability = true };
+        PhotonNetwork.RaiseEvent(evCode, content, raiseEventOptions, sendOptions);
+    }
+    
+
+
 
     private void FireMatchEndedPhotonEvent(double timeToEnd)
     {
@@ -656,10 +680,21 @@ public class UniverseManager : MonoBehaviour, IOnEventCallback
 
         Debug.LogFormat("Recieved PointScored with values: networkPlayerID = {0}, basketballID=  {1}, timeToReset = {2}", playerNetworkID, basketballID, timeToReset);
 
-        score[basketballID]++;
+        score[basketballID]+=2;
         FireScoreChanged();
         currentBall.GetComponent<BallCollisionDetector>().PickedUp = true;
         StartCoroutine(DelayedActionCoroutine((float)timeToReset, ResetPositons));
+    }
+
+    public void HandleDoneFoulPhotonEvent(EventData photonEvent)
+    {
+        object[] recievedData = (object[])photonEvent.CustomData;
+        int playerNetworkID = (int)recievedData[0];
+
+        Debug.LogFormat("Recieved DoneFoul with values: networkPlayerID = {0}", playerNetworkID);
+
+        fouls[playerNetworkID] ++;
+        FireFoulsChanged();
     }
 
     public void HandleMatchEndedPhotonEvent(EventData photonEvent)

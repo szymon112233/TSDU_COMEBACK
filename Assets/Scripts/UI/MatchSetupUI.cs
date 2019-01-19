@@ -22,6 +22,7 @@ public class MatchSetupUI : MonoBehaviour, IOnEventCallback
 
     public Image[] ballsPreviews;
 
+    public GameObject firstPlayerReady;
     public GameObject secondPlayerReady;
 
     public Button redPlayerNext;
@@ -66,6 +67,7 @@ public class MatchSetupUI : MonoBehaviour, IOnEventCallback
         currentRedPlayerPresetIndex = GameState.Instance.currentMatchSetup.PlayerSkinsIndexes[0];
         currentBluePlayerPresetIndex = GameState.Instance.currentMatchSetup.PlayerSkinsIndexes[1];
 
+        firstPlayerReady.SetActive(false);
         secondPlayerReady.SetActive(false);
 
         ChangeTime(0);
@@ -234,6 +236,8 @@ public class MatchSetupUI : MonoBehaviour, IOnEventCallback
             }
             else
             {
+                FireMatchSetupPlayerReadyPhotonEvent(isReady);
+                firstPlayerReady.SetActive(isReady);
                 TryStartGame();
             }
 
@@ -261,6 +265,11 @@ public class MatchSetupUI : MonoBehaviour, IOnEventCallback
                 {
                     FireMatchSetupPlayerReadyPhotonEvent(isReady);
                     secondPlayerReady.SetActive(isReady);
+                }
+                else
+                {
+                    FireMatchSetupPlayerReadyPhotonEvent(isReady);
+                    firstPlayerReady.SetActive(isReady);
                 }
             }
                 
@@ -435,6 +444,11 @@ public class MatchSetupUI : MonoBehaviour, IOnEventCallback
             secondPlayerReady.SetActive(isOtherReady);
 
             TryStartGame();
+        }
+        else
+        {
+            object[] recievedData = (object[])photonEvent.CustomData;
+            firstPlayerReady.SetActive((bool)recievedData[0]);
         }
         
     }

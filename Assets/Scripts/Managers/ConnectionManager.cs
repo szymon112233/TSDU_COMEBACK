@@ -17,20 +17,21 @@ public class ConnectionManager : MonoBehaviourPunCallbacks
 
     //Game Sate changes
     public static readonly byte SendMatchSetupPhotonEvent = 0;
-    public static readonly byte MatchEndedPhotonEvent = 5;
-    public static readonly byte LevelLoadedPhotonEvent = 6;
+    public static readonly byte MatchEndedPhotonEvent = 1;
+    public static readonly byte LevelLoadedPhotonEvent = 2;
     //Gameplay logic events
-    public static readonly byte PlayerHitPhotonEvent = 1;
-    public static readonly byte RequestBallPickupPhotonEvent = 2;
-    public static readonly byte BallPickedUpPhotonEvent = 3;
-    public static readonly byte PointScoredPhotonEvent = 4;
+    public static readonly byte PlayerHitPhotonEvent = 3;
+    public static readonly byte RequestBallPickupPhotonEvent = 4;
+    public static readonly byte BallPickedUpPhotonEvent = 5;
+    public static readonly byte PointScoredPhotonEvent = 6;
+    public static readonly byte DoneFoulPhotonEvent = 7; 
     //Match setup
-    public static readonly byte MatchSetupTimeChangedPhotonEvent = 7;
-    public static readonly byte MatchSetupBallChangedPhotonEvent = 8;
-    public static readonly byte MatchSetupMapChangedPhotonEvent = 9;
-    public static readonly byte MatchSetupPlayerChangedPhotonEvent = 10;
-    public static readonly byte MatchSetupPlayerReadyPhotonEvent = 11;
-    public static readonly byte MatchSetupStartMatchPhotonEvent = 12;
+    public static readonly byte MatchSetupTimeChangedPhotonEvent = 8;
+    public static readonly byte MatchSetupBallChangedPhotonEvent = 9;
+    public static readonly byte MatchSetupMapChangedPhotonEvent = 10;
+    public static readonly byte MatchSetupPlayerChangedPhotonEvent = 11;
+    public static readonly byte MatchSetupPlayerReadyPhotonEvent = 12;
+    public static readonly byte MatchSetupStartMatchPhotonEvent = 13;
 
     #region singleton
     public static ConnectionManager instance = null;
