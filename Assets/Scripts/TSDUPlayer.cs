@@ -382,8 +382,10 @@ public class TSDUPlayer : MonoBehaviourPunCallbacks, IPunObservable {
         {
             stream.SendNext(rigibdoy.position);
             stream.SendNext(Flip);
-
+            
             stream.SendNext(GameInput.instance.GetAxis(GameAxis.X_MOVEMENT, (int)localInputDeviceNumber));
+
+            stream.SendNext(HasBall);
         }
         else
         {
@@ -399,6 +401,8 @@ public class TSDUPlayer : MonoBehaviourPunCallbacks, IPunObservable {
             networkPosition = (Vector2)stream.ReceiveNext();
             transform.localScale = new Vector3((int)stream.ReceiveNext(), transform.localScale.y, transform.localScale.z);
             networkHorizontal = (float)stream.ReceiveNext();
+            ballPosition.SetActive((bool)stream.ReceiveNext());
+
         }
     }
 }

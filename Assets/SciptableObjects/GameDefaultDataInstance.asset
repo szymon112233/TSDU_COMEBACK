@@ -26,6 +26,7 @@ MonoBehaviour:
   - {fileID: 21300008, guid: da6169712434358488e587a55918f13c, type: 3}
   - {fileID: 21300010, guid: da6169712434358488e587a55918f13c, type: 3}
   - {fileID: 21300012, guid: da6169712434358488e587a55918f13c, type: 3}
+  - {fileID: 21300014, guid: da6169712434358488e587a55918f13c, type: 3}
   presets:
   - Shirt: {r: 0, g: 0.121568635, b: 0.8862746, a: 0}
     Pants: {r: 0, g: 0.121568635, b: 0.89019614, a: 0}

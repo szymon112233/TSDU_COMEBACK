@@ -12,6 +12,7 @@ public class OutOfFieldDetector : MonoBehaviour {
         if (BallOut != null && throwBackPoint != null && !UniverseManager.instance.throwBack)
         {
             UniverseManager.instance.throwBack = true;
+            UniverseManager.instance.targetGroup.RemoveMember(collision.gameObject.transform);
             BallOut(throwBackPoint);
         }
     }
