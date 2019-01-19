@@ -245,6 +245,8 @@ public class UniverseManager : MonoBehaviour, IOnEventCallback
             player.sprite.material.SetColor("_ShoesColor", presets[currentMatchSetup.PlayerSkinsIndexes[number - 1]].Acessories);
             player.sprite.material.SetColor("_SkinColor", presets[currentMatchSetup.PlayerSkinsIndexes[number - 1]].Skin);
             player.ballPosition.GetComponent<SpriteRenderer>().sprite = ballColors[currentMatchSetup.BallColorIndex];
+            if (targetGroup.FindMember(player.gameObject.transform) == -1)
+                targetGroup.AddMember(player.gameObject.transform, 1, CameraFollowRadius);
         }
             
         else
@@ -341,7 +343,8 @@ public class UniverseManager : MonoBehaviour, IOnEventCallback
             currentBall.GetComponent<BallCollisionDetector>().OnCollisionWithOutOfField += OnBallOutOfFieldEndGame;
         }
 
-        targetGroup.AddMember(currentBall.transform, 1, CameraFollowRadiusBall);
+        if (targetGroup.FindMember(currentBall.transform) == -1)
+            targetGroup.AddMember(currentBall.transform, 1, CameraFollowRadiusBall);
     }
 
     public void DoneFoul(int number)
