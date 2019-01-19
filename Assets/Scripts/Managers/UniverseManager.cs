@@ -146,7 +146,7 @@ public class UniverseManager : MonoBehaviour, IOnEventCallback
             pointCounters[j].PointScored += () => {
                 if (currentBall.GetComponent<PhotonView>().OwnerActorNr == PhotonNetwork.LocalPlayer.ActorNumber)
                 {
-                    score[i]++;
+                    score[i]+=2;
                     FireScoreChanged();
                     FirePointScoredPhotonEvent(i);
                     currentBall.GetComponent<BallCollisionDetector>().PickedUp = true;
@@ -186,7 +186,7 @@ public class UniverseManager : MonoBehaviour, IOnEventCallback
         {
             int i = j;
             pointCounters[j].PointScored += () => {
-                score[i]++;
+                score[i]+=2;
                 FireScoreChanged();
                 currentBall.GetComponent<BallCollisionDetector>().PickedUp = true;
                 StartCoroutine(DelayedActionCoroutine(1.5f, ResetPositons));
@@ -207,6 +207,12 @@ public class UniverseManager : MonoBehaviour, IOnEventCallback
     {
         if (GameState.Instance.isMultiplayer)
         {
+            //TODO: smooth positions reset on multiplater
+            //foreach (TSDUPlayer pl in allPlayers.Values)
+            //{
+            //    pl.rigibdoy.position = spawners[pl.number].transform.position;
+            //    pl.transform.position = spawners[pl.number].transform.position;
+            //}
             controlledPlayer.ResetState();
             controlledPlayer.rigibdoy.position = spawners[controlledPlayer.number].transform.position;
             controlledPlayer.transform.position = spawners[controlledPlayer.number].transform.position;
