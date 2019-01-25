@@ -11,9 +11,22 @@ public class OutOfFieldDetector : MonoBehaviour {
     {
         if (BallOut != null && throwBackPoint != null && !UniverseManager.instance.throwBack)
         {
-            UniverseManager.instance.throwBack = true;
-            UniverseManager.instance.targetGroup.RemoveMember(collision.gameObject.transform);
-            BallOut(throwBackPoint);
+            if (GameState.Instance.isMultiplayer)
+            {
+                if (collision.gameObject.GetComponent<Photon.Pun.PhotonView>().IsMine)
+                {
+                    UniverseManager.instance.throwBack = true;
+                    UniverseManager.instance.targetGroup.RemoveMember(collision.gameObject.transform);
+                    BallOut(throwBackPoint);
+                }
+            }
+            else
+            {
+                UniverseManager.instance.throwBack = true;
+                UniverseManager.instance.targetGroup.RemoveMember(collision.gameObject.transform);
+                BallOut(throwBackPoint);
+            }
+            
         }
     }
 

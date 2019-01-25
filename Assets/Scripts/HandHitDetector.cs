@@ -6,7 +6,8 @@ public class HandHitDetector : MonoBehaviour {
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        TSDUPlayer player = collision.gameObject.GetComponent<TSDUPlayer>();
+        Debug.Log(collision.name);
+        TSDUPlayer player = collision.transform.parent.parent.gameObject.GetComponent<TSDUPlayer>();
         if (player != null)
         {
             UniverseManager.instance.HitPlayer((int)player.number + 1, Mathf.RoundToInt(gameObject.transform.parent.localScale.x));
