@@ -757,7 +757,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: MULTIPLAYER
+  m_Text: ONLINE MATCH
 --- !u!114 &114508769332356026
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1060,7 +1060,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: SINGLEPLAYER
+  m_Text: LOCAL MATCH
 --- !u!114 &114772813423753970
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1124,9 +1124,8 @@ MonoBehaviour:
 
     szymon112233
 
-    Kyku13
+    MarianKrecik
 
-    ...
 
     Thanks for playing!'
 --- !u!114 &114973543469718968
